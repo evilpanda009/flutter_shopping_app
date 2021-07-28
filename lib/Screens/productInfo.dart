@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_app/utils/database.dart';
 
@@ -11,7 +12,8 @@ class _ProductState extends State<ProductInfo> {
   bool toggleFav = false;
   DatabaseService ds = DatabaseService();
   late List<dynamic>? cart, fav;
-  late Map<String, dynamic> productData;
+  late var productData;
+  late DocumentSnapshot documentSnapshot;
 
   void listCointains(List? list) {
     for (int i = 0; i < list!.length; i++) {
@@ -44,8 +46,9 @@ class _ProductState extends State<ProductInfo> {
 
   @override
   Widget build(BuildContext context) {
-    productData =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    documentSnapshot =
+        ModalRoute.of(context)!.settings.arguments as DocumentSnapshot;
+    productData = documentSnapshot.data();
     int index = productData['id'] - 1;
 
     // setState(() {
@@ -102,7 +105,7 @@ class _ProductState extends State<ProductInfo> {
                     ),
                   ),
                   Center(child: Text(productData['title'])),
-                  Center(child: Text(productData['description'])),
+                  Center(child: Text(productData['desc'])),
                   Center(child: Text(productData['category'])),
                   Center(child: Text('\$ ' + productData['price'].toString())),
                   Row(

@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/Screens/productInfo.dart';
 import 'package:shopping_app/authenticate.dart';
 import 'package:shopping_app/utils/api.dart';
 import 'package:shopping_app/utils/auth.dart';
@@ -20,11 +22,11 @@ class _FavState extends State<Favorites> {
   bool isEmpty = false;
   late var data;
   late Response res;
-  @override
-  void initState() {
-    super.initState();
-    getFav();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getFav();
+  // }
 
   Future getFav() async {
     await ds.getUserData();
@@ -33,14 +35,22 @@ class _FavState extends State<Favorites> {
     return ds.fav;
   }
 
+  Future<void> undoDelete(String id) async {
+    await ds.addtoFav(id);
+  }
+
   Future<Response> getData() async {
     final String url = 'https://fakestoreapi.com/products';
     return await get(Uri.parse(url));
   }
 
+  GlobalKey<ScaffoldState> _key = GlobalKey();
+  bool undo = false;
+
   @override
   Widget build(BuildContext context) {
     int id;
+    setState(() {});
     return !isEmpty
         ? FutureBuilder(
             future: getFav(),
@@ -55,14 +65,148 @@ class _FavState extends State<Favorites> {
                           if (snapshot.hasData) {
                             res = snapshot.data as Response;
                             data = jsonDecode(res.body);
-                            return ListView.builder(
-                                itemCount: ds.fav!.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  id = int.parse((ds.fav![index]).toString());
-                                  return Container(
-                                    child: Image.network(data[id - 1]['image']),
-                                  );
-                                });
+                            return Scaffold(
+                              key: _key,
+                              body: ListView.builder(
+                                  itemCount: ds.fav!.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    id = int.parse((ds.fav![index]).toString());
+
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Dismissible(
+                                        key: Key(ds.fav![index].toString()),
+                                        background: Container(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 40.0),
+                                            child: Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Icon(Icons.delete)),
+                                          ),
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(15))),
+                                        ),
+                                        onDismissed: (direction) async {
+                                          String id = ds.fav![index].toString();
+                                          print("DELETING $id");
+                                          ds.fav!.remove(id.toString());
+                                          await ds.removeFromFav(id.toString());
+
+                                          setState(() {
+                                            String deletedId = id.toString();
+                                            String deletedTitle =
+                                                data[int.parse(id) - 1]
+                                                    ['title'];
+                                            ScaffoldMessenger.of(context)
+                                                .clearSnackBars();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "Removed $deletedTitle from favorites",
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                action: SnackBarAction(
+                                                    label: "UNDO",
+                                                    onPressed: () async {
+                                                      ds.fav!.add(deletedId);
+                                                      undo = true;
+                                                      await undoDelete(
+                                                          id.toString());
+                                                      setState(() {});
+                                                    } // this is what you needed
+                                                    ),
+                                              ),
+                                            );
+                                          });
+                                        },
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            id = int.parse(
+                                                (ds.fav![index]).toString());
+                                            Navigator.pushNamed(
+                                                    context, '/product',
+                                                    arguments: data[id - 1])
+                                                .then((value) =>
+                                                    {setState(() {})});
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      color: Colors.grey,
+                                                      blurRadius: 3,
+                                                      spreadRadius: 3,
+                                                      offset: Offset(0, 3))
+                                                ],
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15))),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                      height: 150,
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 8.0,
+                                                                bottom: 8,
+                                                                right: 8),
+                                                        child: Image.network(
+                                                            data[id - 1]
+                                                                ['image']),
+                                                      )),
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    children: [
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        child: Text(
+                                                          data[id - 1]['title'],
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 20),
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        child: Text("\$ " +
+                                                            data[id - 1]
+                                                                    ['price']
+                                                                .toString()),
+                                                      ),
+                                                      ElevatedButton(
+                                                          onPressed: () {},
+                                                          child: Text(
+                                                            "\u{D83D}\u{DED2} Add to Cart",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ))
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            );
                           }
                           return Empty();
                         }

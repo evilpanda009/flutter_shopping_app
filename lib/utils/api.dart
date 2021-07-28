@@ -10,18 +10,23 @@ class ApiRequests {
   }
 }
 
-class UserData {
-  List? cart;
-  List? fav;
+class ProductData {
+  String? id;
+  String? title, desc;
+  double? price;
+  String? category;
+
   DatabaseService ds = DatabaseService();
 
-  Future<void> get() async {
-    await ds.getUserData();
-    cart = ds.cart;
-    fav = ds.fav;
-    print("hoooray");
-    print(ds.cart);
-    print(ds.fav);
-    return null;
-  }
+  ProductData({this.id, this.title, this.desc, this.price, this.category});
+
+  // Future<void> get() async {
+  //   await ds.getUserData();
+  //   cart = ds.cart;
+  //   fav = ds.fav;
+  //   print("hoooray");
+  //   print(ds.cart);
+  //   print(ds.fav);
+  //   return null;
+  // }
 }

@@ -40,3 +40,19 @@ class Splash extends StatelessWidget {
     );
   }
 }
+
+class ErrorGif extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        color: Color(0xfff3f0ec),
+        child: Image.asset(
+          'assets/no_connection.gif',
+          height: 120,
+          width: 120,
+        ),
+      ),
+    );
+  }
+}

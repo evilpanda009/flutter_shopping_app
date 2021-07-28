@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart';
+import 'package:shopping_app/utils/api.dart';
 import 'package:shopping_app/utils/auth.dart';
 
 class DatabaseService {
@@ -10,17 +15,49 @@ class DatabaseService {
   bool loading = true;
   CollectionReference UserCollection =
       FirebaseFirestore.instance.collection('users');
+  CollectionReference ProductCollection =
+      FirebaseFirestore.instance.collection('products');
   var User = AuthService().getUser().toString();
 
-  Stream<QuerySnapshot> get Data {
-    return UserCollection.snapshots();
+  // Stream<List<ProductData>> get productStream {
+  //   return ProductCollection.snapshots().map(listOfProducts);
+  // }
+
+  Future<void> addProducts(data) async {
+    for (int i = 0; i < data.length; i++) {
+      await db.collection('products').doc(data[i]['id'].toString()).set({
+        'id': data[i]['id'],
+        'title': data[i]['title'],
+        'desc': data[i]['description'],
+        'price': data[i]['price'],
+        'image': data[i]['image'],
+        'category': data[i]['category']
+      }).then((value) => value);
+    }
   }
 
   List? cart;
   List? fav;
+  List? quantity;
+
+  // List<ProductData> listOfProducts(QuerySnapshot querySnapshot) {
+  //   return querySnapshot.docs.map((doc) {
+  //     var data = doc.data() as Map<String, dynamic>;
+  //     return ProductData(
+  //         id: data['id'].toString(),
+  //         title: data['title'],
+  //         desc: data['desc'],
+  //         price: data['price']);
+  //   }).toList();
+  // }
+  final String url = 'https://fakestoreapi.com/products';
 
   Future<void> getUserData() async {
     var user = auth.getUser().toString();
+
+    //Response res = await get(Uri.parse(url));
+
+    //await addProducts(jsonDecode(res.body));
     await db
         .collection('users')
         .doc(user)
@@ -30,10 +67,11 @@ class DatabaseService {
         Map<String, dynamic> data =
             documentSnapshot.data() as Map<String, dynamic>;
 
-        cart = data['cart'];
-        fav = data['fav'];
-        if (cart == null) cart = [];
-        if (fav == null) fav = [];
+        cart = data['cart'] ?? [];
+        fav = data['fav'] ?? [];
+        quantity = data['quantity'] ?? [];
+        // if (cart == null) cart = [];
+        // if (fav == null) fav = [];
 
         print(cart);
         print(fav);
@@ -49,10 +87,30 @@ class DatabaseService {
     try {
       await getUserData();
       cart!.add(id);
+      quantity!.add(1);
 
-      await db.collection('users').doc(user).update({
-        'cart': cart,
-      }).then((val) => print("Item added to cart" + cart.toString()));
+      await db
+          .collection('users')
+          .doc(user)
+          .update({'cart': cart, 'quantity': quantity}).then(
+              (val) => print("Item added to cart" + cart.toString()));
+    } catch (e) {
+      print(e.toString());
+    }
+    return null;
+  }
+
+  Future<void> changeQuantity(String id, int quant) async {
+    var user = auth.getUser().toString();
+    try {
+      await getUserData();
+      quantity!.replaceRange(cart!.indexOf(id), cart!.indexOf(id) + 1, [quant]);
+
+      await db
+          .collection('users')
+          .doc(user)
+          .update({'quantity': quantity}).then(
+              (val) => print("Item added to cart" + cart.toString()));
     } catch (e) {
       print(e.toString());
     }
@@ -62,6 +120,7 @@ class DatabaseService {
   Future<void> removeFromCart(String id) async {
     try {
       await getUserData();
+      await quantity!.removeAt(cart!.indexOf(id));
       cart!.remove(id);
 
       await db.collection('users').doc(User).update({
@@ -166,6 +225,7 @@ class AddUser {
               'timestamp': DateTime.now().millisecondsSinceEpoch,
               'cart': [],
               'fav': [],
+              'quantity': []
             })
             .then((value) => value)
             .catchError((error) => null)
