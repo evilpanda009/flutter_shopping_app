@@ -102,7 +102,7 @@ class _SignInState extends State<SignIn> {
                                       child: TextFormField(
                                         onChanged: (val) {
                                           setState(() {
-                                            email = val;
+                                            email = val.trim();
                                           });
                                         },
                                         keyboardType:

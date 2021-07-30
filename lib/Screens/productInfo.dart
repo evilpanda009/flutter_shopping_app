@@ -79,10 +79,10 @@ class _ProductState extends State<ProductInfo> {
               iconTheme: IconThemeData(
                 color: Colors.black, //change your color here
               ),
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               elevation: 0,
             ),
-            extendBodyBehindAppBar: true,
+            //extendBodyBehindAppBar: true,
             body: Container(
               width: MediaQuery.of(context).size.width,
               child: Column(
@@ -91,11 +91,12 @@ class _ProductState extends State<ProductInfo> {
                     child: Container(
                       height: MediaQuery.of(context).size.height / 2.2,
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                        color: Colors.white,
+                      ),
                       child: Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.only(
+                              bottom: 20.0, left: 20, right: 20),
                           child: Hero(
                             tag: "product" + index.toString(),
                             child: Image.network(productData['image']),
@@ -106,7 +107,8 @@ class _ProductState extends State<ProductInfo> {
                   ),
                   Center(child: Text(productData['title'])),
                   Center(child: Text(productData['desc'])),
-                  Center(child: Text(productData['category'])),
+                  Center(
+                      child: Text(productData['category'] ?? "Miscellaneous")),
                   Center(child: Text('\$ ' + productData['price'].toString())),
                   Row(
                     children: [

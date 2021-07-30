@@ -1,12 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shopping_app/utils/api.dart';
 import 'package:shopping_app/utils/auth.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseService {
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -18,6 +23,8 @@ class DatabaseService {
   CollectionReference ProductCollection =
       FirebaseFirestore.instance.collection('products');
   var User = AuthService().getUser().toString();
+
+  Reference storageRef = FirebaseStorage.instance.ref();
 
   // Stream<List<ProductData>> get productStream {
   //   return ProductCollection.snapshots().map(listOfProducts);
@@ -34,6 +41,75 @@ class DatabaseService {
         'category': data[i]['category']
       }).then((value) => value);
     }
+  }
+
+  Future uploadImage(XFile? image) async {
+    var file = File(image!.path);
+    if (image != null) {
+      //Upload to Firebase
+      var snapshot =
+          await storageRef.child('product/${Uuid().v4()}.jpg').putFile(file);
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl.toString();
+    } else {
+      print('No Image Path Received');
+    }
+  }
+
+  Future<void> orderHistory(
+      List? names, List? prices, List? quantity, totalprice) async {
+    await db.collection('carts').add({
+      'names': names,
+      'prices': prices,
+      'quantity': quantity,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'user': User,
+      'total': totalprice
+    }).then((value) => null);
+  }
+
+  Future<void> clearCart() async {
+    await db.collection('users').doc(User).update({
+      'cart': [],
+      'quantity': [],
+    }).then((value) => null);
+  }
+
+  Future<void> addProduct(ProductData? data) async {
+    int id = 99;
+    await db
+        .collection('products')
+        .orderBy('id', descending: true)
+        .limit(1)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.size == 0 || querySnapshot.docs.isEmpty) {
+        return 1;
+      } else {
+        querySnapshot.docs.forEach((doc) {
+          print("========================" + doc['id'].toString());
+          id = doc['id'] + 1;
+        });
+      }
+    }).catchError((error) {
+      print(error.toString());
+    });
+
+    if (data != null)
+      await db
+          .collection('products')
+          .doc(id.toString())
+          .set({
+            'id': id,
+            'title': data.title,
+            'desc': data.desc,
+            'price': data.price,
+            'image': data.image,
+            'category': data.category ?? "Miscellaneous",
+            'user': auth.getUser().toString()
+          })
+          .then((value) => null)
+          .onError((error, stackTrace) => null);
   }
 
   List? cart;
@@ -123,9 +199,11 @@ class DatabaseService {
       await quantity!.removeAt(cart!.indexOf(id));
       cart!.remove(id);
 
-      await db.collection('users').doc(User).update({
-        'cart': cart,
-      }).then((val) => print("Item removed from cart" + cart.toString()));
+      await db
+          .collection('users')
+          .doc(User)
+          .update({'cart': cart, 'quantity': quantity}).then(
+              (val) => print("Item removed from cart" + cart.toString()));
     } catch (e) {
       print(e.toString());
     }

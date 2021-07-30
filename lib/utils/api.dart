@@ -14,11 +14,13 @@ class ProductData {
   String? id;
   String? title, desc;
   double? price;
-  String? category;
+  String? category = "Miscellaneous";
+  String? image;
 
   DatabaseService ds = DatabaseService();
 
-  ProductData({this.id, this.title, this.desc, this.price, this.category});
+  ProductData(
+      {this.id, this.title, this.desc, this.price, this.category, this.image});
 
   // Future<void> get() async {
   //   await ds.getUserData();

@@ -45,8 +45,8 @@ class _HomeState extends State<Home> {
                 Icon(
                   Icons.person,
                 ),
-                Icon(Icons.history),
-                Icon(Icons.shopping_bag),
+                Icon(Icons.sell),
+                Icon(Icons.shopping_bag_outlined),
                 Icon(Icons.shopping_cart),
                 Icon(
                   Icons.favorite,

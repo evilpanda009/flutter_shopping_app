@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -21,7 +22,7 @@ class _FavState extends State<Favorites> {
   ApiRequests api = ApiRequests();
   bool isEmpty = false;
   late var data;
-  late Response res;
+  late var res;
   // @override
   // void initState() {
   //   super.initState();
@@ -39,9 +40,10 @@ class _FavState extends State<Favorites> {
     await ds.addtoFav(id);
   }
 
-  Future<Response> getData() async {
-    final String url = 'https://fakestoreapi.com/products';
-    return await get(Uri.parse(url));
+  Future<QuerySnapshot> getData() async {
+    // final String url = 'https://fakestoreapi.com/products';
+    // return await get(Uri.parse(url));
+    return await FirebaseFirestore.instance.collection('products').get();
   }
 
   GlobalKey<ScaffoldState> _key = GlobalKey();
@@ -60,11 +62,13 @@ class _FavState extends State<Favorites> {
                   print("Not null");
                   return FutureBuilder(
                       future: getData(),
-                      builder: (context, snapshot) {
+                      builder:
+                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.hasData) {
-                            res = snapshot.data as Response;
-                            data = jsonDecode(res.body);
+                            data =
+                                snapshot.data!.docs as List<DocumentSnapshot>;
+
                             return Scaffold(
                               key: _key,
                               body: ListView.builder(
@@ -189,9 +193,14 @@ class _FavState extends State<Favorites> {
                                                                 .toString()),
                                                       ),
                                                       ElevatedButton(
-                                                          onPressed: () {},
+                                                          onPressed: () async {
+                                                            await ds
+                                                                .removeFromFav(id
+                                                                    .toString());
+                                                            setState(() {});
+                                                          },
                                                           child: Text(
-                                                            "\u{D83D}\u{DED2} Add to Cart",
+                                                            "Remove",
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white),
@@ -250,7 +259,7 @@ class _EmptyState extends State<Empty> {
                 flex: 4,
                 child: Container(
                   child: Image.asset(
-                    'assets/cart.jpg',
+                    'assets/heart.jpg',
                     height: 300,
                     width: 300,
                   ),

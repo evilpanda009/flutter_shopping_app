@@ -60,6 +60,8 @@ class _MyAppState extends State<MyApp> {
           '/sell': (context) => Sell(),
           '/profile': (context) => Profile(),
           '/product': (context) => ProductInfo(),
+          '/sellItem': (context) => SellItem(),
+          '/history': (context) => CartHistory(),
         },
         home: Wrapper(),
       ),
