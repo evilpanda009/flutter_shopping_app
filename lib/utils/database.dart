@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopping_app/utils/api.dart';
 import 'package:shopping_app/utils/auth.dart';
@@ -110,6 +106,22 @@ class DatabaseService {
           })
           .then((value) => null)
           .onError((error, stackTrace) => null);
+  }
+
+  //Future getProduct() async {}
+
+  Future updateProduct(ProductData? data) async {
+    if (data != null)
+      await db.collection('products').doc(data.id.toString()).update({
+        'title': data.title,
+        'desc': data.desc,
+        'price': data.price,
+        'category': data.category ?? "Miscellaneous",
+      }).then((value) => print("Product updated"));
+    if (data!.image != null)
+      await db.collection('products').doc(data.id.toString()).update({
+        'image': data.image,
+      }).then((value) => print("image updated"));
   }
 
   List? cart;

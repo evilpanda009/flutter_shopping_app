@@ -175,8 +175,8 @@ class _MarketState extends State<Market> with SingleTickerProviderStateMixin {
                   Expanded(
                     child: StaggeredGridView.countBuilder(
                         crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 6,
+                        mainAxisSpacing: 6,
                         itemCount: data.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
@@ -196,28 +196,28 @@ class _MarketState extends State<Market> with SingleTickerProviderStateMixin {
                                           spreadRadius: 3,
                                           offset: Offset(0, 3))
                                     ],
-                                    color: colList[
-                                        _random.nextInt(colList.length)],
+                                    color: Colors.grey[300], //colList[
+                                    //     _random.nextInt(colList.length)],
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15))),
                                 child: Column(
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Hero(
-                                            tag: "product" + index.toString(),
-                                            child: FadeInImage.assetNetwork(
-                                              placeholder: 'assets/google.jpg',
-                                              image: data[index]['image'],
-                                              fit: BoxFit.cover,
-                                            ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Hero(
+                                          tag: "product" + index.toString(),
+                                          child: FadeInImage.assetNetwork(
+                                            placeholder: 'assets/bag.jpg',
+                                            image: data[index]['image'],
+                                            imageErrorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Image.asset(
+                                                  'assets/no_connection.gif',
+                                                  fit: BoxFit.fitWidth);
+                                            },
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),

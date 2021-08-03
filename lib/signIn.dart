@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shopping_app/register.dart';
 import 'package:animations/animations.dart';
 import 'package:shopping_app/utils/auth.dart';
 import 'package:shopping_app/utils/database.dart';
 import 'package:shopping_app/utils/loading.dart';
+import 'package:bouncing_widget/bouncing_widget.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -24,6 +25,16 @@ class _SignInState extends State<SignIn> {
   String email = "";
   String password = "";
   String error = "";
+
+  final LinearGradient myGradient = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  );
+  final Shader txtgradient = LinearGradient(
+    colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +58,13 @@ class _SignInState extends State<SignIn> {
                           : null,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                            "assets/blue_backg.jpg",
-                          ),
-                          fit: BoxFit.cover,
-                        ),
+                        color: Colors.white,
+                        // image: DecorationImage(
+                        //   image: AssetImage(
+                        //     "assets/blue_backg.jpg",
+                        //   ),
+                        //   fit: BoxFit.cover,
+                        // ),
                       ),
                       child: Center(
                         child: Column(
@@ -68,14 +80,16 @@ class _SignInState extends State<SignIn> {
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text('Login',
-                                          style: TextStyle(
+                                          style: GoogleFonts.roboto(
                                             fontWeight: FontWeight.w900,
                                             fontSize: 40,
-                                            fontFamily: "Roboto",
-                                            color: Colors.blue,
+                                            foreground: Paint()
+                                              ..shader = txtgradient1,
+
+                                            //color: Colors.orange,
                                             // shadows: [
                                             //   Shadow(
-                                            //     color: Colors.black.withOpacity(0.3),
+                                            //     color: Colors.black54.withOpacity(0.3),
                                             //     offset: Offset(5, 5),
                                             //     blurRadius: 5,
                                             //   ),
@@ -86,15 +100,15 @@ class _SignInState extends State<SignIn> {
                                       decoration: BoxDecoration(
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.grey[700]!
+                                            color: Colors.grey[900]!
                                                 .withOpacity(0.3),
-                                            spreadRadius: 2,
-                                            blurRadius: 4,
-                                            offset: Offset(4,
-                                                4), // changes position of shadow
+                                            spreadRadius: 1,
+                                            blurRadius: 3,
+                                            offset: Offset(3,
+                                                3), // changes position of shadow
                                           )
                                         ],
-                                        color: Colors.white,
+                                        color: Colors.pink[50],
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10)),
                                       ),
@@ -116,7 +130,7 @@ class _SignInState extends State<SignIn> {
                                           ),
                                           prefixIcon: Icon(
                                             Icons.email_outlined,
-                                            color: Colors.tealAccent[700],
+                                            color: Colors.black54,
                                             size: 24,
                                           ),
                                           contentPadding: EdgeInsets.all(8),
@@ -146,7 +160,7 @@ class _SignInState extends State<SignIn> {
                                                 3), // changes position of shadow
                                           )
                                         ],
-                                        color: Colors.white,
+                                        color: Colors.pink[50],
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10)),
                                       ),
@@ -165,7 +179,7 @@ class _SignInState extends State<SignIn> {
                                               fontSize: 18, color: Colors.grey),
                                           prefixIcon: Icon(
                                             Icons.lock_outline,
-                                            color: Colors.tealAccent[700],
+                                            color: Colors.black54,
                                           ),
                                           suffixIcon: IconButton(
                                               splashColor: Colors.transparent,
@@ -179,14 +193,12 @@ class _SignInState extends State<SignIn> {
                                               icon: obscure != true
                                                   ? Icon(
                                                       Icons.visibility,
-                                                      color: Colors
-                                                          .tealAccent[700],
+                                                      color: Colors.black54,
                                                       size: 20,
                                                     )
                                                   : Icon(
                                                       Icons.visibility_off,
-                                                      color: Colors
-                                                          .tealAccent[700],
+                                                      color: Colors.black54,
                                                       size: 20,
                                                     )),
                                           contentPadding: EdgeInsets.all(8),
@@ -213,8 +225,8 @@ class _SignInState extends State<SignIn> {
                                         alignment: Alignment.centerRight,
                                         child: Text(
                                           "Forgot Password",
-                                          style: TextStyle(
-                                              color: Colors.tealAccent[700]),
+                                          style:
+                                              TextStyle(color: Colors.orange),
                                         ),
                                       ),
                                     ),
@@ -225,22 +237,22 @@ class _SignInState extends State<SignIn> {
                                             const EdgeInsets.only(top: 10.0),
                                         child: Text(
                                           error,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
                                               color: Colors.red, fontSize: 15),
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 20),
-                                      child: ElevatedButton(
-                                        style: ButtonStyle(
-                                            shape: MaterialStateProperty.all<
-                                                    RoundedRectangleBorder>(
-                                                RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(18.0),
-                                        ))),
-                                        onPressed: () async {
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Material(
+                                      elevation: 5,
+                                      borderRadius: BorderRadius.circular(80),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(80),
+                                        splashColor: Colors.pink,
+                                        onTap: () async {
                                           if (email.isEmpty ||
                                               password.isEmpty) {
                                             setState(() {
@@ -262,9 +274,42 @@ class _SignInState extends State<SignIn> {
                                             }
                                           }
                                         },
-                                        child: Text(
-                                          'Login',
-                                          style: TextStyle(color: Colors.white),
+                                        child: Ink(
+                                          width: 300,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            gradient: myGradient,
+                                            borderRadius:
+                                                BorderRadius.circular(80.0),
+                                          ),
+                                          child: Container(
+                                            color: Colors.transparent,
+
+                                            constraints: const BoxConstraints(
+                                                minWidth: 88.0,
+                                                minHeight:
+                                                    36.0), // min sizes for Material buttons
+                                            alignment: Alignment.center,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text('Login',
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.openSans(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 20,
+                                                        color: Colors.white)),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                                Icon(Icons.login,
+                                                    color: Colors.white)
+                                              ],
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -273,24 +318,21 @@ class _SignInState extends State<SignIn> {
                                       child: Text(
                                         'Dont have an Account?',
                                         style: TextStyle(
-                                          color: Colors.tealAccent[700],
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.tealAccent[700],
-                                          onPrimary: Colors.blue),
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        primary: Colors.transparent,
+                                      ),
                                       onPressed: () {
                                         setState(() {
                                           Navigator.push(
                                               context,
                                               PageRouteBuilder(
                                                   transitionDuration: Duration(
-                                                      milliseconds: 1000),
+                                                      milliseconds: 600),
                                                   transitionsBuilder:
                                                       (BuildContext context,
                                                           Animation<double>
@@ -320,8 +362,9 @@ class _SignInState extends State<SignIn> {
                                         });
                                       },
                                       child: Text(
-                                        'Register',
-                                        style: TextStyle(color: Colors.white),
+                                        'Sign Up',
+                                        style: TextStyle(
+                                            fontSize: 17, color: Colors.orange),
                                       ),
                                     ),
                                     SizedBox(
@@ -332,7 +375,7 @@ class _SignInState extends State<SignIn> {
                                       style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w500,
-                                          color: Colors.teal[700]),
+                                          color: Colors.black),
                                     )
                                   ],
                                 ),
@@ -372,18 +415,19 @@ class _SignInState extends State<SignIn> {
                                     height: 60,
                                     width: 60,
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey[850]!
-                                              .withOpacity(0.3),
-                                          spreadRadius: 3,
-                                          blurRadius: 5,
-                                          offset: Offset(0,
-                                              2), // changes position of shadow
-                                        )
-                                      ],
-                                      color: Colors.grey[850],
+                                      borderRadius: BorderRadius.circular(80),
+
+                                      // boxShadow: [
+                                      //   BoxShadow(
+                                      //     color: Colors.grey[850]!
+                                      //         .withOpacity(0.3),
+                                      //     spreadRadius: 3,
+                                      //     blurRadius: 5,
+                                      //     offset: Offset(0,
+                                      //         2), // changes position of shadow
+                                      //   )
+                                      // ],
+                                      color: Colors.white,
                                       image: DecorationImage(
                                         image: AssetImage("assets/google.jpg"),
                                       ),

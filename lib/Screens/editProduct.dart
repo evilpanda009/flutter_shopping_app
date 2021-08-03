@@ -1,199 +1,27 @@
-import 'dart:ffi';
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shopping_app/Screens/cart.dart';
 import 'package:shopping_app/utils/api.dart';
-import 'package:shopping_app/utils/auth.dart';
 import 'package:shopping_app/utils/database.dart';
 import 'package:shopping_app/utils/loading.dart';
 
-class Sell extends StatefulWidget {
+class EditProduct extends StatefulWidget {
+  const EditProduct({Key? key}) : super(key: key);
+
   @override
-  _SellState createState() => _SellState();
+  _EditProductState createState() => _EditProductState();
 }
 
-class _SellState extends State<Sell> {
-  DatabaseService ds = DatabaseService();
-
-  static var user = AuthService().getUser().toString();
-
-  @override
-  void initState() {
-    //this.getCurrentUser();
-
-    super.initState();
-    user = AuthService().getUser().toString();
-  }
-
-  static User? _user;
-
-  // _SellState() {
-  // user = AuthService().getUser().toString();
-  // }
-
-  // void getCurrentUser() {
-  //   _user = FirebaseAuth.instance.currentUser;
-  //   setState(() {
-  //     _user!.uid;
-  //   });
-  // calling setState allows widgets to access uid and access stream
-  //}
-  final Stream<QuerySnapshot> productStream = FirebaseFirestore.instance
-      .collection('products')
-      .orderBy('id')
-      .snapshots();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        toolbarHeight: 60,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: IconButton(
-                tooltip: "Sell new product",
-                onPressed: () {
-                  Navigator.pushNamed(context, '/sellItem');
-                },
-                icon: Icon(
-                  Icons.add,
-                  color: Colors.black,
-                )),
-          )
-        ],
-      ),
-      body: StreamBuilder(
-          stream: productStream,
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Loading();
-            }
-            if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-              var finalData = snapshot.data!.docs;
-              List<QueryDocumentSnapshot<Object?>> data = [];
-              for (var doc in finalData) {
-                if ((doc.data()! as Map<String, dynamic>)['user'] ==
-                    user.toString()) {
-                  data.add(doc);
-                }
-              }
-
-              return ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/product',
-                                arguments: data[index])
-                            .then((value) => {setState(() {})});
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey,
-                                    blurRadius: 3,
-                                    spreadRadius: 3,
-                                    offset: Offset(0, 3))
-                              ],
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15))),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                    height: 150,
-                                    padding: EdgeInsets.all(8),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 8.0, bottom: 8, right: 8),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: FadeInImage.assetNetwork(
-                                          placeholder: 'assets/tag.jpg',
-                                          image: data[index]['image'],
-                                        ),
-                                      ),
-                                    )),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        data[index]['title'],
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text("\$ " +
-                                          data[index]['price'].toString()),
-                                    ),
-                                    ButtonBar(
-                                      children: [
-                                        ElevatedButton(
-                                            onPressed: () {},
-                                            child: Text(
-                                              "Delete Product",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            )),
-                                        IconButton(
-                                            onPressed: () {
-                                              Navigator.pushNamed(
-                                                  context, '/edit',
-                                                  arguments: data[index]);
-                                            },
-                                            icon: Icon(Icons.edit))
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  });
-            }
-            return Empty();
-            // } else
-            //   return Loading();
-          }),
-    );
-  }
-}
-
-class SellItem extends StatefulWidget {
-  const SellItem({Key? key}) : super(key: key);
-
-  @override
-  _SellItemState createState() => _SellItemState();
-}
-
-class _SellItemState extends State<SellItem> {
+class _EditProductState extends State<EditProduct> {
   DatabaseService ds = DatabaseService();
   String title = "";
   String desc = '';
   double price = 0;
   String? category = null;
   String imageUrl = "";
-  XFile? _image;
+  XFile? _image = null;
   ProductData? product = ProductData();
 
   imgFromCamera() async {
@@ -245,9 +73,20 @@ class _SellItemState extends State<SellItem> {
         });
   }
 
+  late DocumentSnapshot args;
+
   bool loading = false;
+
   @override
   Widget build(BuildContext context) {
+    args = ModalRoute.of(context)!.settings.arguments as DocumentSnapshot;
+    title = args['title'];
+    desc = args['desc'];
+    imageUrl = args['image'];
+    category = args['category'];
+    price = args['price'];
+    product!.id = args['id'].toString();
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -270,6 +109,7 @@ class _SellItemState extends State<SellItem> {
                       child: Column(
                         children: [
                           TextFormField(
+                            initialValue: title,
                             validator: (text) {
                               if (text == null ||
                                   text.isEmpty ||
@@ -313,6 +153,7 @@ class _SellItemState extends State<SellItem> {
                             height: 30,
                           ),
                           TextFormField(
+                            initialValue: desc,
                             validator: (text) {
                               if (text == null ||
                                   text.isEmpty ||
@@ -369,7 +210,7 @@ class _SellItemState extends State<SellItem> {
                           ),
                           DropdownButton<String>(
                             focusColor: Colors.teal[100],
-                            value: category,
+                            value: null,
                             hint: Text("Category"),
                             elevation: 5,
                             dropdownColor: Colors.teal[100],
@@ -408,47 +249,33 @@ class _SellItemState extends State<SellItem> {
                           ),
                           Center(
                             child: GestureDetector(
-                              onTap: () {
-                                _showPicker(context);
-                              },
-                              child: _image != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.file(
-                                        File(_image!.path),
-                                        width: 300,
-                                        height: 300,
-                                        fit: BoxFit.fill,
-                                      ),
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      width: 300,
-                                      height: 300,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.camera_alt,
-                                            color: Colors.grey[800],
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Text("Add product image")
-                                        ],
-                                      ),
-                                    ),
-                            ),
+                                onTap: () {
+                                  _showPicker(context);
+                                },
+                                child: _image != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.file(
+                                          File(_image!.path),
+                                          width: 300,
+                                          height: 300,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      )
+                                    : ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          imageUrl,
+                                          width: 300,
+                                          height: 300,
+                                          fit: BoxFit.fill,
+                                        ))),
                           ),
                           SizedBox(
                             height: 20,
                           ),
                           TextFormField(
+                            initialValue: price.toString(),
                             decoration: InputDecoration(
                               labelText: "Price",
                               labelStyle: TextStyle(
@@ -481,12 +308,14 @@ class _SellItemState extends State<SellItem> {
                                   setState(() {
                                     loading = true;
                                   });
-                                  product!.image = await ds.uploadImage(_image);
-                                  await ds.addProduct(product);
+                                  if (_image != null)
+                                    product!.image =
+                                        await ds.uploadImage(_image);
+                                  await ds.updateProduct(product);
                                   Navigator.pop(context);
                                 }
                               },
-                              child: Text("Sell Item"))
+                              child: Text("Save Changes"))
                         ],
                       ),
                     ),

@@ -43,7 +43,10 @@ class _FavState extends State<Favorites> {
   Future<QuerySnapshot> getData() async {
     // final String url = 'https://fakestoreapi.com/products';
     // return await get(Uri.parse(url));
-    return await FirebaseFirestore.instance.collection('products').get();
+    return await FirebaseFirestore.instance
+        .collection('products')
+        .orderBy('id')
+        .get();
   }
 
   GlobalKey<ScaffoldState> _key = GlobalKey();
@@ -52,7 +55,7 @@ class _FavState extends State<Favorites> {
   @override
   Widget build(BuildContext context) {
     int id;
-    setState(() {});
+
     return !isEmpty
         ? FutureBuilder(
             future: getFav(),
@@ -70,12 +73,17 @@ class _FavState extends State<Favorites> {
                                 snapshot.data!.docs as List<DocumentSnapshot>;
 
                             return Scaffold(
+                              appBar: AppBar(
+                                title: Text("My Favorites "),
+                                elevation: 5,
+                              ),
                               key: _key,
                               body: ListView.builder(
                                   itemCount: ds.fav!.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     id = int.parse((ds.fav![index]).toString());
+                                    print(id.toString());
 
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -166,9 +174,14 @@ class _FavState extends State<Favorites> {
                                                                 top: 8.0,
                                                                 bottom: 8,
                                                                 right: 8),
-                                                        child: Image.network(
-                                                            data[id - 1]
-                                                                ['image']),
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          child: Image.network(
+                                                              data[id - 1]
+                                                                  ['image']),
+                                                        ),
                                                       )),
                                                 ),
                                                 Expanded(
@@ -193,11 +206,32 @@ class _FavState extends State<Favorites> {
                                                                 .toString()),
                                                       ),
                                                       ElevatedButton(
-                                                          onPressed: () async {
-                                                            await ds
-                                                                .removeFromFav(id
-                                                                    .toString());
-                                                            setState(() {});
+                                                          onPressed: () {
+                                                            showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) =>
+                                                                        AlertDialog(
+                                                                          title:
+                                                                              Text("Remove from Favorites?"),
+                                                                          content:
+                                                                              Text("The item will no longer appear in your Favorites."),
+                                                                          actions: [
+                                                                            TextButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.of(context).pop();
+                                                                                },
+                                                                                child: Text("No")),
+                                                                            TextButton(
+                                                                                onPressed: () async {
+                                                                                  Navigator.of(context).pop();
+                                                                                  await ds.removeFromFav(id.toString());
+                                                                                  setState(() {});
+                                                                                },
+                                                                                child: Text("Yes"))
+                                                                          ],
+                                                                        ));
                                                           },
                                                           child: Text(
                                                             "Remove",
@@ -281,7 +315,7 @@ class _EmptyState extends State<Empty> {
                 flex: 2,
                 child: Container(
                   margin: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width / 3.5),
+                      left: MediaQuery.of(context).size.width / 5),
                   child: Image.asset(
                     'assets/right-drawn-arrow.jpg',
                     height: 100,

@@ -99,7 +99,12 @@ class _ProductState extends State<ProductInfo> {
                               bottom: 20.0, left: 20, right: 20),
                           child: Hero(
                             tag: "product" + index.toString(),
-                            child: Image.network(productData['image']),
+                            child: Image.network(productData['image'],
+                                errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/no_connection.gif',
+                              );
+                            }),
                           ),
                         ),
                       ),
