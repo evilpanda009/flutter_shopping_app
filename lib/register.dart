@@ -8,6 +8,7 @@ import 'package:shopping_app/utils/auth.dart';
 import 'package:shopping_app/utils/database.dart';
 import 'package:shopping_app/utils/loading.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);

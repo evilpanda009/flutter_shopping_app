@@ -332,7 +332,7 @@ class _SignInState extends State<SignIn> {
                                               context,
                                               PageRouteBuilder(
                                                   transitionDuration: Duration(
-                                                      milliseconds: 600),
+                                                      milliseconds: 700),
                                                   transitionsBuilder:
                                                       (BuildContext context,
                                                           Animation<double>

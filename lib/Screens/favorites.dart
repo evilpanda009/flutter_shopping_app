@@ -21,7 +21,7 @@ class _FavState extends State<Favorites> {
   DatabaseService ds = DatabaseService();
   ApiRequests api = ApiRequests();
   bool isEmpty = false;
-  late var data;
+  late List? dataAll;
   late var res;
   // @override
   // void initState() {
@@ -51,6 +51,9 @@ class _FavState extends State<Favorites> {
 
   GlobalKey<ScaffoldState> _key = GlobalKey();
   bool undo = false;
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   @override
   Widget build(BuildContext context) {
@@ -69,26 +72,42 @@ class _FavState extends State<Favorites> {
                           (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.hasData) {
-                            data =
+                            dataAll =
                                 snapshot.data!.docs as List<DocumentSnapshot>;
-
+                            List? data = [];
+                            for (int i = 0; i < dataAll!.length; i++) {
+                              if (ds.fav!
+                                  .contains(dataAll![i]['id'].toString()))
+                                data.add(dataAll![i]);
+                            }
+                            print("Data" + data.length.toString());
+                            print("Favsss" + ds.fav!.length.toString());
                             return Scaffold(
                               appBar: AppBar(
-                                title: Text("My Favorites "),
+                                backgroundColor: Colors.white,
+                                title: Text(
+                                  "My Favorites ",
+                                  style: TextStyle(
+                                      fontSize: 40,
+                                      foreground: Paint()
+                                        ..shader = txtgradient1,
+                                      fontWeight: FontWeight.w600),
+                                ),
                                 elevation: 5,
                               ),
                               key: _key,
                               body: ListView.builder(
-                                  itemCount: ds.fav!.length,
+                                  itemCount: data.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    id = int.parse((ds.fav![index]).toString());
+                                    id =
+                                        int.parse(data[index]['id'].toString());
                                     print(id.toString());
 
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Dismissible(
-                                        key: Key(ds.fav![index].toString()),
+                                        key: Key(data[index]['id'].toString()),
                                         background: Container(
                                           child: Padding(
                                             padding: const EdgeInsets.only(
@@ -104,7 +123,8 @@ class _FavState extends State<Favorites> {
                                                   Radius.circular(15))),
                                         ),
                                         onDismissed: (direction) async {
-                                          String id = ds.fav![index].toString();
+                                          String id =
+                                              data[index]['id'].toString();
                                           print("DELETING $id");
                                           ds.fav!.remove(id.toString());
                                           await ds.removeFromFav(id.toString());
@@ -112,8 +132,7 @@ class _FavState extends State<Favorites> {
                                           setState(() {
                                             String deletedId = id.toString();
                                             String deletedTitle =
-                                                data[int.parse(id) - 1]
-                                                    ['title'];
+                                                data[index]['title'];
                                             ScaffoldMessenger.of(context)
                                                 .clearSnackBars();
                                             ScaffoldMessenger.of(context)
@@ -141,108 +160,130 @@ class _FavState extends State<Favorites> {
                                         child: GestureDetector(
                                           onTap: () {
                                             id = int.parse(
-                                                (ds.fav![index]).toString());
+                                                (data[index]['id']).toString());
                                             Navigator.pushNamed(
                                                     context, '/product',
-                                                    arguments: data[id - 1])
+                                                    arguments: data[index])
                                                 .then((value) =>
                                                     {setState(() {})});
                                           },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      color: Colors.grey,
-                                                      blurRadius: 3,
-                                                      spreadRadius: 3,
-                                                      offset: Offset(0, 3))
-                                                ],
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(15))),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Container(
-                                                      height: 150,
-                                                      padding:
-                                                          EdgeInsets.all(8),
-                                                      child: Padding(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 12, right: 12),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.grey,
+                                                        blurRadius: 2,
+                                                        spreadRadius: 1,
+                                                        offset: Offset(0, 3))
+                                                  ],
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(5))),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                        height: 150,
                                                         padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                top: 8.0,
-                                                                bottom: 8,
-                                                                right: 8),
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(15),
-                                                          child: Image.network(
-                                                              data[id - 1]
-                                                                  ['image']),
-                                                        ),
-                                                      )),
-                                                ),
-                                                Expanded(
-                                                  child: Column(
-                                                    children: [
-                                                      Align(
-                                                        alignment: Alignment
-                                                            .centerLeft,
-                                                        child: Text(
-                                                          data[id - 1]['title'],
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 20),
-                                                      Align(
-                                                        alignment: Alignment
-                                                            .centerLeft,
-                                                        child: Text("\$ " +
-                                                            data[id - 1]
-                                                                    ['price']
-                                                                .toString()),
-                                                      ),
-                                                      ElevatedButton(
-                                                          onPressed: () {
-                                                            showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) =>
-                                                                        AlertDialog(
-                                                                          title:
-                                                                              Text("Remove from Favorites?"),
-                                                                          content:
-                                                                              Text("The item will no longer appear in your Favorites."),
-                                                                          actions: [
-                                                                            TextButton(
-                                                                                onPressed: () {
-                                                                                  Navigator.of(context).pop();
-                                                                                },
-                                                                                child: Text("No")),
-                                                                            TextButton(
-                                                                                onPressed: () async {
-                                                                                  Navigator.of(context).pop();
-                                                                                  await ds.removeFromFav(id.toString());
-                                                                                  setState(() {});
-                                                                                },
-                                                                                child: Text("Yes"))
-                                                                          ],
-                                                                        ));
-                                                          },
-                                                          child: Text(
-                                                            "Remove",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ))
-                                                    ],
+                                                            EdgeInsets.all(8),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 8.0,
+                                                                  bottom: 8,
+                                                                  left: 8,
+                                                                  right: 8),
+                                                          child: ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                            child: Image
+                                                                .network(data[
+                                                                        index]
+                                                                    ['image']),
+                                                          ),
+                                                        )),
                                                   ),
-                                                )
-                                              ],
+                                                  Expanded(
+                                                    child: Column(
+                                                      children: [
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .centerLeft,
+                                                          child: Text(
+                                                            data[index]
+                                                                ['title'],
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 20),
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .centerLeft,
+                                                          child: Text(
+                                                            "\$ " +
+                                                                data[index][
+                                                                        'price']
+                                                                    .toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .centerRight,
+                                                          child: IconButton(
+                                                            icon: Icon(
+                                                              Icons
+                                                                  .delete_outline,
+                                                              color: Colors.red,
+                                                              size: 28,
+                                                            ),
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) =>
+                                                                          AlertDialog(
+                                                                            title:
+                                                                                Text("Remove from Favorites?"),
+                                                                            content:
+                                                                                Text("The item will no longer appear in your Favorites."),
+                                                                            actions: [
+                                                                              TextButton(
+                                                                                  onPressed: () {
+                                                                                    Navigator.of(context).pop();
+                                                                                  },
+                                                                                  child: Text("No")),
+                                                                              TextButton(
+                                                                                  onPressed: () async {
+                                                                                    Navigator.of(context).pop();
+                                                                                    await ds.removeFromFav(id.toString());
+                                                                                    setState(() {});
+                                                                                  },
+                                                                                  child: Text("Yes"))
+                                                                            ],
+                                                                          ));
+                                                            },
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),

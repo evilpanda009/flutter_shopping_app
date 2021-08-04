@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shopping_app/utils/auth.dart';
 import 'package:shopping_app/utils/database.dart';
 import 'package:shopping_app/utils/loading.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -15,6 +16,9 @@ class _ProfileState extends State<Profile> {
   final db = FirebaseFirestore.instance;
   late String name, email;
   bool loading = true;
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   // String getName() {
   //   final userId = _auth.getUser();
@@ -62,53 +66,70 @@ class _ProfileState extends State<Profile> {
             color: Color(0xfff3f0ec),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Profile",
-                      style:
-                          TextStyle(fontSize: 35, fontWeight: FontWeight.w700),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
                     ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  //CircleAvatar(backgroundImage: _auth.,)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      name,
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.email),
-                      SizedBox(
-                        width: 10,
+                    ClipPath(
+                      clipper: WaveClipperTwo(),
+                      child: Container(
+                        height: 200,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: [
+                          Colors.orange[400]!,
+                          Colors.pink[300]!
+                        ])),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Profile",
+                            style: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white
+                                //foreground: Paint()..shader = txtgradient1,
+                                ),
+                          ),
+                        ),
                       ),
-                      Text(email, style: TextStyle(fontSize: 15)),
-                    ],
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      child: Text("Sign Out"),
-                      onPressed: () async {
-                        await _auth.signOut();
-                      },
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 40,
+                    ),
+                    //CircleAvatar(backgroundImage: _auth.,)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        name,
+                        style: TextStyle(fontSize: 25),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.email),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(email, style: TextStyle(fontSize: 15)),
+                      ],
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        child: Text("Sign Out"),
+                        onPressed: () async {
+                          await _auth.signOut();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

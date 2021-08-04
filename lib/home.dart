@@ -21,6 +21,9 @@ class _HomeState extends State<Home> {
   Color bgcolor = Color(0xfff3f0ec);
   Color navbarbg = Color(0xfff3f0ec);
   Color navbar = Color(0xffBFDBF7);
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   final tabs = [
     Profile(),
@@ -34,30 +37,58 @@ class _HomeState extends State<Home> {
     return SafeArea(
         child: Scaffold(
             backgroundColor: bgcolor,
-            bottomNavigationBar: CurvedNavigationBar(
-              backgroundColor: bgcolor,
-              color: navbar,
-              buttonBackgroundColor: navbar,
-              animationDuration: Duration(milliseconds: 300),
-              height: 55,
-              index: 2,
-              items: <Widget>[
-                Icon(
-                  Icons.person,
-                ),
-                Icon(Icons.sell),
-                Icon(Icons.shopping_bag_outlined),
-                Icon(Icons.shopping_cart),
-                Icon(
-                  Icons.favorite,
-                  color: Colors.red,
-                )
-              ],
-              onTap: (index) {
-                setState(() {
-                  pageNumber = index;
-                });
-              },
+            bottomNavigationBar: Container(
+              height: 70,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10)),
+                gradient: LinearGradient(colors: [
+                  Colors.orange[400]!,
+                  Colors.pink[300]!
+                ] //Color(0xFF00D0E1), Color(0xFF00B3FA)],
+                    // begin: Alignment.topLeft,
+                    // end: Alignment.topRight,
+                    // stops: [0.0, 0.8],
+                    // tileMode: TileMode.clamp,
+                    ),
+              ),
+              child: CurvedNavigationBar(
+                backgroundColor: Colors.transparent,
+                color: Colors.white,
+                buttonBackgroundColor: Colors.transparent,
+                animationDuration: Duration(milliseconds: 300),
+                height: 55,
+                index: 2,
+                items: <Widget>[
+                  Icon(
+                    Icons.person,
+                    //color: Colors.white,
+                  ),
+                  Icon(
+                    Icons.sell,
+                    //color: Colors.white,
+                  ),
+                  Icon(
+                    Icons.shopping_bag_outlined,
+                    //color: Colors.white,
+                  ),
+                  Icon(
+                    Icons.shopping_cart,
+                    //color: Colors.white,
+                  ),
+                  Icon(
+                    Icons.favorite,
+                    //color: Colors.white,
+                  )
+                ],
+                onTap: (index) {
+                  setState(() {
+                    pageNumber = index;
+                  });
+                },
+              ),
             ),
             body: tabs[pageNumber]));
   }

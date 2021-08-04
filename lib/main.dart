@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/Screens/cart.dart';
+import 'package:shopping_app/Screens/cartHistory.dart';
 import 'package:shopping_app/Screens/editProduct.dart';
 import 'package:shopping_app/Screens/favorites.dart';
 import 'package:shopping_app/Screens/market.dart';
