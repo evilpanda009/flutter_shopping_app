@@ -97,6 +97,7 @@ class _FavState extends State<Favorites> {
                               ),
                               key: _key,
                               body: ListView.builder(
+                                  physics: BouncingScrollPhysics(),
                                   itemCount: data.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -266,14 +267,14 @@ class _FavState extends State<Favorites> {
                                                                                   onPressed: () {
                                                                                     Navigator.of(context).pop();
                                                                                   },
-                                                                                  child: Text("No")),
+                                                                                  child: Text("Cancel")),
                                                                               TextButton(
                                                                                   onPressed: () async {
                                                                                     Navigator.of(context).pop();
                                                                                     await ds.removeFromFav(id.toString());
                                                                                     setState(() {});
                                                                                   },
-                                                                                  child: Text("Yes"))
+                                                                                  child: Text("Remove", style: TextStyle(color: Colors.red)))
                                                                             ],
                                                                           ));
                                                             },
@@ -313,6 +314,9 @@ class Empty extends StatefulWidget {
 }
 
 class _EmptyState extends State<Empty> {
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -327,7 +331,10 @@ class _EmptyState extends State<Empty> {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Text(
                   "Favorites",
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w700,
+                      foreground: Paint()..shader = txtgradient1),
                 ),
               )),
               Expanded(

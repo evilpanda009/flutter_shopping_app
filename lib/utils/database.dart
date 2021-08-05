@@ -109,19 +109,24 @@ class DatabaseService {
   }
 
   //Future getProduct() async {}
+  Future getProduct(String id) async {
+    return await db.collection('products').doc(id).get().then((value) => value);
+  }
 
   Future updateProduct(ProductData? data) async {
-    if (data != null)
+    if (data != null) {
+      var product = await getProduct(data.id.toString());
       await db.collection('products').doc(data.id.toString()).update({
-        'title': data.title,
-        'desc': data.desc,
-        'price': data.price,
-        'category': data.category ?? "Miscellaneous",
+        'title': data.title ?? product['title'],
+        'desc': data.desc ?? product['desc'],
+        'price': data.price ?? product['price'],
+        'category': data.category ?? product['category'],
       }).then((value) => print("Product updated"));
-    if (data!.image != null)
-      await db.collection('products').doc(data.id.toString()).update({
-        'image': data.image,
-      }).then((value) => print("image updated"));
+      if (data.image != null)
+        await db.collection('products').doc(data.id.toString()).update({
+          'image': data.image ?? product['image'],
+        }).then((value) => print("image updated"));
+    }
   }
 
   List? cart;

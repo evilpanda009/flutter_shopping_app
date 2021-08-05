@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/Screens/productInfo.dart';
 import 'package:shopping_app/authenticate.dart';
 import 'package:shopping_app/utils/api.dart';
 import 'package:shopping_app/utils/auth.dart';
@@ -171,277 +172,264 @@ class _CartState extends State<Cart> {
                                     Expanded(
                                       child: Stack(children: [
                                         Expanded(
-                                          child: ListView.builder(
-                                              itemCount: ds.cart!.length,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                id = int.parse((data[index]
-                                                        ['id'])
-                                                    .toString());
+                                          child: ScrollConfiguration(
+                                            behavior: MyBehavior(),
+                                            child: ListView.builder(
+                                                physics:
+                                                    BouncingScrollPhysics(),
+                                                itemCount: ds.cart!.length,
+                                                itemBuilder:
+                                                    (BuildContext context,
+                                                        int index) {
+                                                  id = int.parse((data[index]
+                                                          ['id'])
+                                                      .toString());
 
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 8.0,
-                                                          bottom: 8,
-                                                          right: 12,
-                                                          left: 12),
-                                                  child: Dismissible(
-                                                    key: Key(data[index]['id']
-                                                        .toString()),
-                                                    background: Container(
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                right: 40.0),
-                                                        child: Align(
-                                                            alignment: Alignment
-                                                                .centerRight,
-                                                            child: Icon(
-                                                                Icons.delete)),
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                          color: Colors.red,
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          15))),
-                                                    ),
-                                                    onDismissed:
-                                                        (direction) async {
-                                                      String id = data[index]
-                                                              ['id']
-                                                          .toString();
-                                                      print("DELETING $id");
-                                                      ds.cart!.remove(
-                                                          id.toString());
-                                                      await ds.removeFromCart(
-                                                          id.toString());
-
-                                                      setState(() {
-                                                        String deletedId =
-                                                            id.toString();
-                                                        String deletedTitle =
-                                                            data[index]
-                                                                ['title'];
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .clearSnackBars();
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(
-                                                          SnackBar(
-                                                            content: Text(
-                                                              "Removed $deletedTitle from Cart",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                            action:
-                                                                SnackBarAction(
-                                                                    label:
-                                                                        "UNDO",
-                                                                    onPressed:
-                                                                        () async {
-                                                                      ds.cart!.add(
-                                                                          deletedId);
-
-                                                                      await undoDelete(
-                                                                          id.toString());
-                                                                      setState(
-                                                                          () {});
-                                                                    } // this is what you needed
-                                                                    ),
-                                                          ),
-                                                        );
-                                                      });
-                                                    },
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        id = int.parse(
-                                                            data[index]['id']
-                                                                .toString());
-                                                        Navigator.pushNamed(
-                                                                context,
-                                                                '/product',
-                                                                arguments:
-                                                                    data[index])
-                                                            .then((value) => {
-                                                                  setState(
-                                                                      () {})
-                                                                });
-                                                      },
-                                                      child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                                color: Colors
-                                                                    .white,
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                      color: Colors
-                                                                          .grey,
-                                                                      blurRadius:
-                                                                          2,
-                                                                      spreadRadius:
-                                                                          1,
-                                                                      offset:
-                                                                          Offset(
-                                                                              0,
-                                                                              3))
-                                                                ],
-                                                                borderRadius: BorderRadius
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 8.0,
+                                                            bottom: 8,
+                                                            right: 12,
+                                                            left: 12),
+                                                    child: Dismissible(
+                                                      key: Key(data[index]['id']
+                                                          .toString()),
+                                                      background: Container(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  right: 40.0),
+                                                          child: Align(
+                                                              alignment: Alignment
+                                                                  .centerRight,
+                                                              child: Icon(Icons
+                                                                  .delete)),
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.red,
+                                                            borderRadius:
+                                                                BorderRadius
                                                                     .all(Radius
                                                                         .circular(
-                                                                            5))),
-                                                        child: Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Container(
-                                                                  height: 150,
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              8),
-                                                                  child:
-                                                                      Padding(
-                                                                          padding: const EdgeInsets.only(
-                                                                              top:
-                                                                                  8.0,
-                                                                              bottom:
-                                                                                  8,
-                                                                              right:
-                                                                                  10),
-                                                                          child: Image.network(data[index]['image'], errorBuilder: (context,
-                                                                              error,
-                                                                              stackTrace) {
-                                                                            return Image.asset('assets/cart.jpg');
-                                                                          }))),
-                                                            ),
-                                                            Expanded(
-                                                              child: Column(
-                                                                children: [
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
-                                                                    child: Text(
-                                                                      data[index]
-                                                                          [
-                                                                          'title'],
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                      height:
-                                                                          20),
-                                                                  FractionallySizedBox(
-                                                                    widthFactor:
-                                                                        1,
-                                                                    child: Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            "\$ " +
-                                                                                data[index]['price'].toString(),
-                                                                            overflow:
-                                                                                TextOverflow.fade,
-                                                                          ),
-                                                                          IconButton(
-                                                                              onPressed: () async {
-                                                                                id = int.parse(data[index]['id'].toString());
-                                                                                int quant = ds.quantity![ds.cart!.indexOf(id.toString())];
-                                                                                if (quant == 1) {
-                                                                                  return null;
-                                                                                }
-                                                                                quant = quant - 1;
-                                                                                await ds.changeQuantity(id.toString(), quant);
-                                                                                setState(() {});
-                                                                              },
-                                                                              icon: Icon(Icons.remove)),
-                                                                          Text(
-                                                                            ds.quantity![ds.cart!.indexOf(id.toString())].toString(),
-                                                                            style:
-                                                                                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                                                          ),
-                                                                          IconButton(
-                                                                              onPressed: () async {
-                                                                                id = int.parse(data[index]['id'].toString());
-                                                                                int quant = ds.quantity![ds.cart!.indexOf(id.toString())];
-                                                                                quant = quant + 1;
-                                                                                await ds.changeQuantity(id.toString(), quant);
-                                                                                setState(() {});
-                                                                              },
-                                                                              icon: Icon(Icons.add)),
-                                                                        ]),
-                                                                  ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
-                                                                    child:
-                                                                        TextButton
-                                                                            .icon(
-                                                                      style: ButtonStyle(
-                                                                          backgroundColor:
-                                                                              MaterialStateProperty.all(Colors.white)),
-                                                                      onPressed:
-                                                                          () {
-                                                                        id = int.parse(
-                                                                            data[index]['id'].toString());
-                                                                        showDialog(
-                                                                            context:
-                                                                                context,
-                                                                            builder: (context) =>
-                                                                                AlertDialog(
-                                                                                  title: Text("Remove from Cart?"),
-                                                                                  content: Text("The item will no longer appear in your cart."),
-                                                                                  actions: [
-                                                                                    TextButton(
-                                                                                        onPressed: () {
-                                                                                          Navigator.of(context).pop();
-                                                                                        },
-                                                                                        child: Text("No")),
-                                                                                    TextButton(
-                                                                                        onPressed: () async {
-                                                                                          ds.cart!.remove(id.toString());
-                                                                                          Navigator.of(context).pop();
-                                                                                          await ds.removeFromCart(id.toString());
-                                                                                          setState(() {});
-                                                                                        },
-                                                                                        child: Text("Yes"))
-                                                                                  ],
-                                                                                ));
-                                                                      },
-                                                                      icon: Icon(
-                                                                          Icons
-                                                                              .delete_outline,
-                                                                          size:
-                                                                              20,
-                                                                          color:
-                                                                              Colors.red),
+                                                                            15))),
+                                                      ),
+                                                      onDismissed:
+                                                          (direction) async {
+                                                        String id = data[index]
+                                                                ['id']
+                                                            .toString();
+                                                        print("DELETING $id");
+                                                        ds.cart!.remove(
+                                                            id.toString());
+                                                        await ds.removeFromCart(
+                                                            id.toString());
+
+                                                        setState(() {
+                                                          String deletedId =
+                                                              id.toString();
+                                                          String deletedTitle =
+                                                              data[index]
+                                                                  ['title'];
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .clearSnackBars();
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                "Removed $deletedTitle from Cart",
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              action:
+                                                                  SnackBarAction(
                                                                       label:
+                                                                          "UNDO",
+                                                                      onPressed:
+                                                                          () async {
+                                                                        ds.cart!
+                                                                            .add(deletedId);
+
+                                                                        await undoDelete(
+                                                                            id.toString());
+                                                                        setState(
+                                                                            () {});
+                                                                      } // this is what you needed
+                                                                      ),
+                                                            ),
+                                                          );
+                                                        });
+                                                      },
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          id = int.parse(
+                                                              data[index]['id']
+                                                                  .toString());
+                                                          Navigator.pushNamed(
+                                                                  context,
+                                                                  '/product',
+                                                                  arguments:
+                                                                      data[
+                                                                          index])
+                                                              .then((value) => {
+                                                                    setState(
+                                                                        () {})
+                                                                  });
+                                                        },
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        blurRadius:
+                                                                            2,
+                                                                        spreadRadius:
+                                                                            1,
+                                                                        offset: Offset(
+                                                                            0,
+                                                                            3))
+                                                                  ],
+                                                                  borderRadius:
+                                                                      BorderRadius.all(
+                                                                          Radius.circular(
+                                                                              5))),
+                                                          child: Row(
+                                                            children: [
+                                                              Expanded(
+                                                                child: Container(
+                                                                    height: 150,
+                                                                    padding: EdgeInsets.all(8),
+                                                                    child: Padding(
+                                                                        padding: const EdgeInsets.only(top: 8.0, bottom: 8, right: 10),
+                                                                        child: Image.network(data[index]['image'], errorBuilder: (context, error, stackTrace) {
+                                                                          return Image.asset(
+                                                                              'assets/cart.jpg');
+                                                                        }))),
+                                                              ),
+                                                              Expanded(
+                                                                child: Column(
+                                                                  children: [
+                                                                    Align(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .centerLeft,
+                                                                      child:
                                                                           Text(
-                                                                        "Remove",
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.red),
+                                                                        data[index]
+                                                                            [
+                                                                            'title'],
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
                                                                       ),
                                                                     ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            )
-                                                          ],
+                                                                    SizedBox(
+                                                                        height:
+                                                                            20),
+                                                                    FractionallySizedBox(
+                                                                      widthFactor:
+                                                                          1,
+                                                                      child: Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              "\$ " + data[index]['price'].toString(),
+                                                                              overflow: TextOverflow.fade,
+                                                                            ),
+                                                                            IconButton(
+                                                                                onPressed: () async {
+                                                                                  id = int.parse(data[index]['id'].toString());
+                                                                                  int quant = ds.quantity![ds.cart!.indexOf(id.toString())];
+                                                                                  if (quant == 1) {
+                                                                                    return null;
+                                                                                  }
+                                                                                  quant = quant - 1;
+                                                                                  await ds.changeQuantity(id.toString(), quant);
+                                                                                  setState(() {});
+                                                                                },
+                                                                                icon: Icon(Icons.remove)),
+                                                                            Text(
+                                                                              ds.quantity![ds.cart!.indexOf(id.toString())].toString(),
+                                                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                                                            ),
+                                                                            IconButton(
+                                                                                onPressed: () async {
+                                                                                  id = int.parse(data[index]['id'].toString());
+                                                                                  int quant = ds.quantity![ds.cart!.indexOf(id.toString())];
+                                                                                  quant = quant + 1;
+                                                                                  await ds.changeQuantity(id.toString(), quant);
+                                                                                  setState(() {});
+                                                                                },
+                                                                                icon: Icon(Icons.add)),
+                                                                          ]),
+                                                                    ),
+                                                                    Align(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .centerLeft,
+                                                                      child: TextButton
+                                                                          .icon(
+                                                                        style: ButtonStyle(
+                                                                            backgroundColor:
+                                                                                MaterialStateProperty.all(Colors.white)),
+                                                                        onPressed:
+                                                                            () {
+                                                                          id = int.parse(
+                                                                              data[index]['id'].toString());
+                                                                          showDialog(
+                                                                              context: context,
+                                                                              builder: (context) => AlertDialog(
+                                                                                    title: Text("Remove from Cart?"),
+                                                                                    content: Text("The item will no longer appear in your cart."),
+                                                                                    actions: [
+                                                                                      TextButton(
+                                                                                          onPressed: () {
+                                                                                            Navigator.of(context).pop();
+                                                                                          },
+                                                                                          child: Text("Cancel")),
+                                                                                      TextButton(
+                                                                                          onPressed: () async {
+                                                                                            ds.cart!.remove(id.toString());
+                                                                                            Navigator.of(context).pop();
+                                                                                            await ds.removeFromCart(id.toString());
+                                                                                            setState(() {});
+                                                                                          },
+                                                                                          child: Text("Remove", style: TextStyle(color: Colors.red)))
+                                                                                    ],
+                                                                                  ));
+                                                                        },
+                                                                        icon: Icon(
+                                                                            Icons
+                                                                                .delete_outline,
+                                                                            size:
+                                                                                20,
+                                                                            color:
+                                                                                Colors.red),
+                                                                        label:
+                                                                            Text(
+                                                                          "Remove",
+                                                                          style:
+                                                                              TextStyle(color: Colors.red),
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              }),
+                                                  );
+                                                }),
+                                          ),
                                         ),
                                         Positioned(
                                           left: MediaQuery.of(context)
