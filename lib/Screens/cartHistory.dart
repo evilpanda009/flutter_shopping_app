@@ -57,6 +57,7 @@ class _CartHistoryState extends State<CartHistory> {
                         thickness: 3,
                       );
                     },
+                    physics: BouncingScrollPhysics(),
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       var document = data[index];
