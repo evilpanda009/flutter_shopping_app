@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_app/Screens/cart.dart';
@@ -23,7 +25,7 @@ class _MarketState extends State<Market>
   var data;
   final String url = 'https://fakestoreapi.com/products';
   bool loading = true;
-  var tempImage = new AssetImage('assets/google.jpg');
+  var tempImage = new AssetImage('assets/loading1.jpg');
   bool toggleCart = false;
   bool toggleFav = false;
   DatabaseService ds = DatabaseService();
@@ -65,6 +67,29 @@ class _MarketState extends State<Market>
       .orderBy('id')
       .snapshots();
   final String id = AuthService().getUser().toString();
+  late String name;
+
+  getUserName() async {
+    var user = AuthService().getUser().toString();
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print(documentSnapshot.data());
+        Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
+
+        setState(() {
+          name = data['name'].toString();
+          //email = data['email'].toString();
+          //loading = false;
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -74,6 +99,11 @@ class _MarketState extends State<Market>
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 450));
   }
+
+  final Stream<QuerySnapshot> productStream = FirebaseFirestore.instance
+      .collection('products')
+      .orderBy('id')
+      .snapshots();
 
   final Stream<QuerySnapshot> productStream1 = FirebaseFirestore.instance
       .collection('products')
@@ -110,9 +140,49 @@ class _MarketState extends State<Market>
     }
   }
 
+  void categories(String value) {
+    final String query = value;
+    if (query == "All") {
+      setState(() {
+        stream = productStream;
+      });
+    } else {
+      setState(() {
+        stream = FirebaseFirestore.instance
+            .collection('products')
+            .where('category', isEqualTo: "$query")
+            .snapshots();
+      });
+    }
+  }
+
+  void search(String searchkey) {
+    setState(() {
+      stream = FirebaseFirestore.instance
+          .collection('products')
+          .orderBy('title')
+          .where('title', isGreaterThanOrEqualTo: searchkey)
+          .where('title', isLessThan: searchkey + 'z')
+          .snapshots();
+    });
+  }
+
   List? cart = [];
   List? fav = [];
   List? quantity = [];
+  // _navigateAndDisplaySelection(BuildContext context, index) async {
+  //   // Navigator.push returns a Future that completes after calling
+  //   // Navigator.pop on the Selection Screen.
+  //   final int result =
+  //       await Navigator.pushNamed(context, '/product', arguments: data[index])
+  //           as int;
+  //   print(result.toString());
+  //   // controller.animateTo(double.parse(result.toString()),
+  //   //     duration: Duration(seconds: 1), curve: Curves.ease);
+  //   //controller.jumpTo(controller.position.maxScrollExtent);
+  //   // ScaffoldMessenger.of(context)
+  //   //     .showSnackBar(SnackBar(content: Text("Product ID $result")));
+  // }
 
   //Response res = await get(Uri.parse(url));
 
@@ -124,8 +194,21 @@ class _MarketState extends State<Market>
 
   late Map<String, dynamic> userdata;
 
+  final List categoryList = <String>[
+    "All",
+    r"Men's Clothing",
+    r"Women's Clothing",
+    r"Kid's Stuff",
+    r"Electronics",
+    r"Home Accessories",
+    r"Women's Accessories",
+    r"Men's Accessories",
+    r"Miscellaneous"
+  ];
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     // id = AuthService().getUser().toString();
     return
         // : Padding(
@@ -143,330 +226,368 @@ class _MarketState extends State<Market>
         //           );
         //         }),
         //   );
-        Scaffold(
-            appBar: AppBar(
-              title: Text("Marketplace"),
-              actions: [
-                PopupMenuButton<String>(
-                  onSelected: handleClick,
-                  itemBuilder: (BuildContext context) {
-                    return {
-                      'Price Ascending',
-                      'Price Descending',
-                      'Newest First',
-                      'Alphabetical'
-                    }.map((String choice) {
-                      return PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(choice),
-                      );
-                    }).toList();
-                  },
-                ),
-              ],
-            ),
-            body: StreamBuilder<DocumentSnapshot>(
-                // future: FirebaseFirestore.instance .collection('users').doc(id).get(),
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(id)
-                    .snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  userdata = snapshot.data!.data() as Map<String, dynamic>;
-                  return StreamBuilder<QuerySnapshot>(
-                      stream: stream,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        if (snapshot.hasError) {
-                          return ErrorGif();
-                        }
-                        if (snapshot.hasData && snapshot.data != null) {
-                          data = snapshot.data!.docs;
-
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(children: [
-                              Text(
-                                "Marketplace",
-                                style: TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.w700),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              // ClipOval(
-                              //     child: Container(
-                              //   height: 50,
-                              //   width: MediaQuery.of(context).size.width,
-                              //   color: Colors.red,
-                              // )),
-                              Expanded(
-                                child: StaggeredGridView.countBuilder(
-                                    physics: BouncingScrollPhysics(),
-                                    controller: controller,
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 6,
-                                    mainAxisSpacing: 6,
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
+        StreamBuilder<DocumentSnapshot>(
+            // future: FirebaseFirestore.instance .collection('users').doc(id).get(),
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(id)
+                .snapshots(),
+            builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return ErrorGif();
+              }
+              if (snapshot.hasData && snapshot.data != null) {
+                userdata = snapshot.data!.data() as Map<String, dynamic>;
+                name = userdata['name'];
+                return Scaffold(
+                    drawer: Drawer(
+                        child: SingleChildScrollView(
+                      physics: ScrollPhysics(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ClipPath(
+                            clipper: WaveClipperTwo(),
+                            child: Container(
+                                // decoration: BoxDecoration(
+                                //     color: Colors.red,
+                                //     borderRadius: BorderRadius.only(
+                                //         bottomLeft: Radius.circular(15),
+                                //         bottomRight: Radius.circular(15))),
+                                color: Colors.red,
+                                height: 200,
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, top: 30),
+                                  child: Text("Hi,\n$name",
+                                      maxLines: 3,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: true,
+                                      style: GoogleFonts.montserrat(
+                                          height: 2,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 1)),
+                                )),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      WidgetSpan(
+                                        child:
+                                            Icon(Icons.sell_rounded, size: 14),
+                                      ),
+                                      TextSpan(
+                                        text: " Categories",
+                                        style: GoogleFonts.montserrat(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 20,
+                                            color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.all(0),
+                                shrinkWrap: true,
+                                itemCount: categoryList.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: GestureDetector(
                                         onTap: () {
-                                          //print(index);
-                                          Navigator.pushNamed(
-                                              context, '/product',
-                                              arguments: data[index]);
+                                          categories(
+                                              categoryList[index].toString());
+                                          Navigator.of(context).pop();
                                         },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.7),
-                                                      blurRadius: 3,
-                                                      spreadRadius: 3,
-                                                      offset: Offset(0, 3))
-                                                ],
-                                                color: Colors.white, //colList[
-                                                //     _random.nextInt(colList.length)],
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(8))),
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
+                                        child: Text(
+                                          categoryList[index].toString(),
+                                          style: GoogleFonts.montserrat(),
+                                        )),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    )),
+                    appBar: AppBar(
+                      title: Text("Marketplace"),
+                      actions: [
+                        PopupMenuButton<String>(
+                          onSelected: handleClick,
+                          itemBuilder: (BuildContext context) {
+                            return {
+                              'Price Ascending',
+                              'Price Descending',
+                              'Alphabetical'
+                            }.map((String choice) {
+                              return PopupMenuItem<String>(
+                                value: choice,
+                                child: Text(choice),
+                              );
+                            }).toList();
+                          },
+                        ),
+                      ],
+                    ),
+                    body: StreamBuilder<QuerySnapshot>(
+                        stream: stream,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.deepOrange,
+                            ));
+                          }
+
+                          if (snapshot.hasError) {
+                            return ErrorGif();
+                          }
+                          if (snapshot.hasData && snapshot.data != null) {
+                            data = snapshot.data!.docs;
+
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Column(children: [
+                                TextField(
+                                  onChanged: (value) {
+                                    search(value);
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                // ClipOval(
+                                //     child: Container(
+                                //   height: 50,
+                                //   width: MediaQuery.of(context).size.width,
+                                //   color: Colors.red,
+                                // )),
+                                Expanded(
+                                  child: StaggeredGridView.countBuilder(
+                                      key: PageStorageKey("List"),
+                                      physics: BouncingScrollPhysics(),
+                                      controller: controller,
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 3,
+                                      mainAxisSpacing: 3,
+                                      itemCount: data.length,
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () async {
+                                            // await _navigateAndDisplaySelection(
+                                            //     context, index);
+                                            //print(index);
+                                            Navigator.pushNamed(
+                                                context, '/product',
+                                                arguments: data[index]);
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.5),
+                                                        blurRadius: 3,
+                                                        spreadRadius: 1,
+                                                        offset: Offset(0, 3))
+                                                  ],
+                                                  color:
+                                                      Colors.white, //colList[
+                                                  //     _random.nextInt(colList.length)],
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(5))),
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
                                                       child: Hero(
                                                         tag: "product" +
                                                             index.toString(),
                                                         child: FadeInImage
                                                             .assetNetwork(
+                                                          alignment:
+                                                              Alignment.center,
+                                                          height: 150,
                                                           placeholder:
-                                                              'assets/bag.jpg',
+                                                              'assets/loading2.gif',
                                                           image: data[index]
                                                               ['image'],
                                                           imageErrorBuilder:
                                                               (context, error,
                                                                   stackTrace) {
                                                             return Image.asset(
-                                                                'assets/no_connection.gif',
-                                                                fit: BoxFit
-                                                                    .fitWidth);
+                                                              'assets/no_connection.gif',
+                                                              height: 150,
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                            );
                                                           },
-                                                          fit: BoxFit.cover,
+                                                          fit: BoxFit.contain,
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                                FractionallySizedBox(
-                                                  widthFactor: 1,
-                                                  child: Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal:
-                                                                    8.0),
-                                                        child: Text(
-                                                          '\$' +
-                                                              data[index]
-                                                                      ['price']
-                                                                  .toString(),
+                                                  FractionallySizedBox(
+                                                    widthFactor: 0.9,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        10.0),
+                                                            child: Text(
+                                                              '\$' +
+                                                                  data[index][
+                                                                          'price']
+                                                                      .toString(),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .fade,
+                                                              softWrap: false,
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      // IconButton(
-                                                      //     onPressed: () {
-                                                      //       setState(() {
-                                                      //         toggleCart =
-                                                      //             !toggleCart;
-                                                      //         if (toggleCart ==
-                                                      //             true)
-                                                      //           ds.addtoCart(data[
-                                                      //                       index]
-                                                      //                   ['id']
-                                                      //               .toString());
-                                                      //         else
-                                                      //           ds.removeFromCart(
-                                                      //               data[index][
-                                                      //                       'id']
-                                                      //                   .toString());
-                                                      //       });
-                                                      //     },
-                                                      //     icon: Icon(
-                                                      //         userdata['cart'].contains(
-                                                      //                 data[index]
-                                                      //                         [
-                                                      //                         'id']
-                                                      //                     .toString())
-                                                      //             ? Icons
-                                                      //                 .shopping_cart
-                                                      //             : Icons
-                                                      //                 .shopping_cart_outlined,
-                                                      //         size: 15)),
-                                                      IconButton(
-                                                          onPressed: () {
-                                                            int i = index;
-                                                            setState(() {
-                                                              toggleFav =
-                                                                  !toggleFav;
-                                                              if (!userdata[
-                                                                      'fav']
-                                                                  .contains(data[
+                                                        // IconButton(
+                                                        //     onPressed: () {
+                                                        //       setState(() {
+                                                        //         toggleCart =
+                                                        //             !toggleCart;
+                                                        //         if (toggleCart ==
+                                                        //             true)
+                                                        //           ds.addtoCart(data[
+                                                        //                       index]
+                                                        //                   ['id']
+                                                        //               .toString());
+                                                        //         else
+                                                        //           ds.removeFromCart(
+                                                        //               data[index][
+                                                        //                       'id']
+                                                        //                   .toString());
+                                                        //       });
+                                                        //     },
+                                                        //     icon: Icon(
+                                                        //         userdata['cart'].contains(
+                                                        //                 data[index]
+                                                        //                         [
+                                                        //                         'id']
+                                                        //                     .toString())
+                                                        //             ? Icons
+                                                        //                 .shopping_cart
+                                                        //             : Icons
+                                                        //                 .shopping_cart_outlined,
+                                                        //         size: 15)),
+                                                        IconButton(
+                                                            onPressed: () {
+                                                              int i = index;
+                                                              setState(() {
+                                                                toggleFav =
+                                                                    !toggleFav;
+                                                                if (!userdata[
+                                                                        'fav']
+                                                                    .contains(data[index]
+                                                                            [
+                                                                            'id']
+                                                                        .toString()))
+                                                                  ds.addtoFav(data[
                                                                               index]
                                                                           ['id']
-                                                                      .toString()))
-                                                                ds.addtoFav(data[
-                                                                            index]
-                                                                        ['id']
-                                                                    .toString());
-                                                              else
-                                                                ds.removeFromFav(
-                                                                    data[index][
-                                                                            'id']
-                                                                        .toString());
-                                                              controller.animateTo(
-                                                                  i /
-                                                                      (data
-                                                                          .length) *
-                                                                      controller
-                                                                          .position
-                                                                          .maxScrollExtent,
-                                                                  duration: Duration(
-                                                                      milliseconds:
-                                                                          500),
-                                                                  curve: Curves
-                                                                      .ease);
-                                                            });
-                                                          },
-                                                          icon: Icon(
-                                                            userdata['fav'].contains(
-                                                                    data[index][
-                                                                            'id']
-                                                                        .toString())
-                                                                ? Icons.favorite
-                                                                : Icons
-                                                                    .favorite_border,
-                                                            size: 15,
-                                                          ))
-                                                    ],
+                                                                      .toString());
+                                                                else
+                                                                  ds.removeFromFav(
+                                                                      data[index]
+                                                                              [
+                                                                              'id']
+                                                                          .toString());
+                                                                controller.animateTo(
+                                                                    i /
+                                                                        (data
+                                                                            .length) *
+                                                                        controller
+                                                                            .position
+                                                                            .maxScrollExtent,
+                                                                    duration: Duration(
+                                                                        milliseconds:
+                                                                            500),
+                                                                    curve: Curves
+                                                                        .ease);
+                                                              });
+                                                            },
+                                                            icon: Icon(
+                                                              userdata['fav'].contains(
+                                                                      data[index]
+                                                                              [
+                                                                              'id']
+                                                                          .toString())
+                                                                  ? Icons
+                                                                      .favorite
+                                                                  : Icons
+                                                                      .favorite_border,
+                                                              size: 20,
+                                                            ))
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 10.0,
-                                                          left: 10,
-                                                          right: 10),
-                                                  child: Center(
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 10.0,
+                                                            left: 15,
+                                                            right: 10),
                                                     child: Text(
                                                       data[index]['title'],
+                                                      maxLines: 2,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                  ),
-                                                )
-                                              ],
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    staggeredTileBuilder: (index) {
-                                      return StaggeredTile.fit(1);
-                                    }),
-                              ),
+                                        );
+                                      },
+                                      staggeredTileBuilder: (index) {
+                                        return StaggeredTile.fit(1);
+                                      }),
+                                ),
+                              ]),
+                            );
+                          }
 
-                              // child: GridView.builder(
-                              //   itemCount: data.length,
-                              //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              //     crossAxisCount: (MediaQuery.of(context).orientation ==
-                              //             Orientation.portrait)
-                              //         ? 2
-                              //         : 3,
-                              //     mainAxisSpacing: 10,
-                              //   ),
-                              //   itemBuilder: (BuildContext context, int index) {
-                              //     return ClipRRect(
-                              //       borderRadius: BorderRadius.circular(20),
-                              //       child: new Card(
-                              //         shape: RoundedRectangleBorder(
-                              //           side: BorderSide(color: Colors.white70, width: 1),
-                              //           borderRadius: BorderRadius.circular(15),
-                              //         ),
-                              //         child: new GridTile(
-                              //           footer: Padding(
-                              //             padding: const EdgeInsets.all(8.0),
-                              //             child: Text(
-                              //               data[index]['title'].toString(),
-                              //               textAlign: TextAlign.center,
-                              //             ),
-                              //           ),
-                              //           child: Padding(
-                              //             padding: const EdgeInsets.all(10.0),
-                              //             child: Image.network(
-                              //                 data[index]['image'].toString()),
-                              //           ), //just for testing, will fill with image later
-                              //         ),
-                              //       ),
-                              //     );
-                              //   },
-                              // ),
-                              //       new StaggeredGridView.count(
-                              //         crossAxisCount: 4, // I only need two card horizontally
-                              //         padding: const EdgeInsets.all(2.0),
-                              //         children: data.map<Widget>((item) {
-                              //           //Do you need to go somewhere when you tap on this card, wrap using InkWell and add your route
-                              //           return new Card(
-                              //             semanticContainer: false,
-                              //             shape: const RoundedRectangleBorder(
-                              //               borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                              //             ),
-                              //             child: Column(
-                              //               crossAxisAlignment: CrossAxisAlignment.start,
-                              //               children: <Widget>[
-                              //                 Image.network(data['image']),
-                              //                 Text(data['title']),
-                              //                 Text(data['price']),
-                              //               ],
-                              //             ),
-                              //           );
-                              //         }).toList(),
-
-                              //         //Here is the place that we are getting flexible/ dynamic card for various images
-                              //         staggeredTiles: data
-                              //             .map<StaggeredTile>((_) => StaggeredTile.fit(2))
-                              //             .toList(),
-                              //         mainAxisSpacing: 3.0,
-                              //         crossAxisSpacing: 4.0, // add some space
-                              //       ),
-                              //     ],
-                              //   ),
-                              // );
-                            ]),
-                          );
-                        }
-
-                        return Empty();
-                      });
-                }));
+                          return Empty();
+                        }));
+              }
+              return Empty();
+            });
   }
 }

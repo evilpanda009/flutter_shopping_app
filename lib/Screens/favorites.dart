@@ -65,7 +65,6 @@ class _FavState extends State<Favorites> {
             builder: (context, snap) {
               if (snap.connectionState == ConnectionState.done) {
                 if (snap.hasData && snap.data != null && snap.data != []) {
-                  print("Not null");
                   return FutureBuilder(
                       future: getData(),
                       builder:
@@ -80,8 +79,8 @@ class _FavState extends State<Favorites> {
                                   .contains(dataAll![i]['id'].toString()))
                                 data.add(dataAll![i]);
                             }
-                            print("Data" + data.length.toString());
-                            print("Favsss" + ds.fav!.length.toString());
+                            // print("Data" + data.length.toString());
+                            // print("Favsss" + ds.fav!.length.toString());
                             return Scaffold(
                               appBar: AppBar(
                                 backgroundColor: Colors.white,
@@ -97,13 +96,13 @@ class _FavState extends State<Favorites> {
                               ),
                               key: _key,
                               body: ListView.builder(
+                                  key: PageStorageKey("Favorites"),
                                   physics: BouncingScrollPhysics(),
                                   itemCount: data.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     id =
                                         int.parse(data[index]['id'].toString());
-                                    print(id.toString());
 
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -204,10 +203,16 @@ class _FavState extends State<Favorites> {
                                                                 BorderRadius
                                                                     .circular(
                                                                         15),
-                                                            child: Image
-                                                                .network(data[
-                                                                        index]
-                                                                    ['image']),
+                                                            child: Image.network(
+                                                                data[index]
+                                                                    ['image'],
+                                                                errorBuilder:
+                                                                    (context,
+                                                                        error,
+                                                                        stackTrace) {
+                                                              return Image.asset(
+                                                                  'assets/cart.jpg');
+                                                            }),
                                                           ),
                                                         )),
                                                   ),
@@ -295,12 +300,15 @@ class _FavState extends State<Favorites> {
                           }
                           return Empty();
                         }
-                        return Center(child: CircularProgressIndicator());
+                        return Center(
+                            child: CircularProgressIndicator(
+                                color: Colors.deepOrange));
                       });
                 }
                 return Empty();
               }
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(color: Colors.deepOrange));
             })
         : Empty();
   }

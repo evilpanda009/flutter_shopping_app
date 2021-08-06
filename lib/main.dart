@@ -12,6 +12,7 @@ import 'package:shopping_app/Screens/market.dart';
 import 'package:shopping_app/Screens/productInfo.dart';
 import 'package:shopping_app/Screens/sell.dart';
 import 'package:shopping_app/Screens/profile.dart';
+import 'package:shopping_app/Screens/sellProduct.dart';
 import 'package:shopping_app/authenticate.dart';
 import 'package:shopping_app/home.dart';
 import 'package:shopping_app/register.dart';

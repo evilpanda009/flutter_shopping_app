@@ -1,3 +1,4 @@
+import 'package:bouncing_widget/bouncing_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -49,6 +50,9 @@ class _ProductState extends State<ProductInfo> {
   final LinearGradient myGradient = LinearGradient(
     colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
   );
+  final LinearGradient gradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[100]!, Colors.pink[100]!],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,22 @@ class _ProductState extends State<ProductInfo> {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
+              // leading: IconButton(
+              //   icon: Icon(Icons.arrow_back),
+              //   onPressed: () async {
+              //     Navigator.pop(context, productData['id']) as int;
+              //     return productData['id'];
+              //   },
+              // ),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.pushReplacementNamed(context, '/home',
+                          arguments: 3);
+                    },
+                    icon: Icon(Icons.shopping_cart))
+              ],
               iconTheme: IconThemeData(
                 color: Colors.black, //change your color here
               ),
@@ -124,27 +144,30 @@ class _ProductState extends State<ProductInfo> {
                     ),
                   ),
                   Center(
-                    child: DraggableScrollableSheet(
-                        initialChildSize: 0.5,
-                        minChildSize: 0.4,
-                        maxChildSize: 0.85,
-                        builder: (context, scrollcontroller) {
-                          return ScrollConfiguration(
-                            behavior: MyBehavior(),
-                            child: SingleChildScrollView(
-                              physics: BouncingScrollPhysics(),
-                              controller: scrollcontroller,
-                              child: Center(
-                                child: Container(
-                                  //margin: EdgeInsets.only(
-                                  //top: MediaQuery.of(context).size.height / 2.2),
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.78,
-                                  //-
-                                  //     MediaQuery.of(context).size.height / 2.2,
-                                  decoration: BoxDecoration(
-                                      color: Color(0xff6A66A3),
-                                      // gradient: myGradient,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: DraggableScrollableSheet(
+                          initialChildSize: 0.5,
+                          minChildSize: 0.4,
+                          maxChildSize: 0.85,
+                          builder: (context, scrollcontroller) {
+                            return ScrollConfiguration(
+                              behavior: MyBehavior(),
+                              child: SingleChildScrollView(
+                                physics: BouncingScrollPhysics(),
+                                controller: scrollcontroller,
+                                child: Center(
+                                  child: Container(
+                                    //margin: EdgeInsets.only(
+                                    //top: MediaQuery.of(context).size.height / 2.2),
+                                    height: MediaQuery.of(context).size.height *
+                                        0.78,
+                                    //-
+                                    //     MediaQuery.of(context).size.height / 2.2,
+                                    decoration: BoxDecoration(
+                                      // color: Color(0xffEDAFB8),
+                                      // color: Colors.white60,
+                                      gradient: gradient1,
                                       // boxShadow: [
                                       //   BoxShadow(
                                       //       color: Colors.grey.withOpacity(0.4),
@@ -152,107 +175,137 @@ class _ProductState extends State<ProductInfo> {
                                       //       spreadRadius: 1,
                                       //       blurRadius: 3)
                                       // ],
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15),
-                                          topRight: Radius.circular(15))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 20.0,
-                                        bottom: 0,
-                                        left: 20,
-                                        right: 20),
-                                    child: Column(
-                                      children: [
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              productData['title'],
-                                              style: GoogleFonts.montserrat(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.w600),
-                                            )),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 15.0),
-                                          child: Align(
+                                      borderRadius: BorderRadius.circular(30),
+                                      // borderRadius: BorderRadius.only(
+                                      //     topLeft: Radius.circular(30),
+                                      //     topRight: Radius.circular(30))
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 20.0,
+                                          bottom: 0,
+                                          left: 20,
+                                          right: 20),
+                                      child: Column(
+                                        children: [
+                                          Align(
                                               alignment: Alignment.centerLeft,
                                               child: Text(
-                                                '\$ ' +
-                                                    productData['price']
-                                                        .toString(),
+                                                productData['title'],
                                                 style: GoogleFonts.montserrat(
-                                                    fontSize: 25,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.orange),
+                                                    fontSize: 24,
+                                                    fontWeight:
+                                                        FontWeight.w600),
                                               )),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 15.0),
-                                          child: Text(
-                                            productData['desc'],
-                                            style: GoogleFonts.montserrat(),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 15.0),
+                                            child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  '\$ ' +
+                                                      productData['price']
+                                                          .toString(),
+                                                  style: GoogleFonts.montserrat(
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.black87),
+                                                )),
                                           ),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 15.0),
-                                          child: Align(
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 15.0),
+                                            child: Align(
                                               alignment: Alignment.centerLeft,
                                               child: Text(
-                                                productData['category'] ??
-                                                    "Miscellaneous",
+                                                productData['desc'],
                                                 style: GoogleFonts.montserrat(),
-                                              )),
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 15.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              ElevatedButton(
-                                                  style: ButtonStyle(
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all(toggleCart
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .black)),
-                                                  onPressed: () async {
-                                                    if (toggleCart == false)
-                                                      await ds.addtoCart(
-                                                          productData['id']
-                                                              .toString());
-                                                    else
-                                                      await ds.removeFromCart(
-                                                          productData['id']
-                                                              .toString());
-                                                    setState(() {
-                                                      toggleCart = !toggleCart;
-                                                    });
-                                                  },
-                                                  child: Text(
-                                                    toggleCart
-                                                        ? 'Remove from Cart'
-                                                        : 'Add to Cart',
-                                                    style: TextStyle(
-                                                        color: toggleCart
-                                                            ? Colors.black
-                                                            : Colors.white),
-                                                  )),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 10.0),
-                                                child: Material(
-                                                  child: IconButton(
-                                                      color:
-                                                          Colors.pink.shade100,
-                                                      highlightColor:
-                                                          Colors.pink.shade100,
-                                                      splashColor:
-                                                          Colors.pink.shade100,
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 15.0),
+                                            child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    children: [
+                                                      WidgetSpan(
+                                                        child: Icon(
+                                                            Icons.sell_rounded,
+                                                            size: 14),
+                                                      ),
+                                                      TextSpan(
+                                                        text: " " +
+                                                            (productData[
+                                                                    'category'] ??
+                                                                "Miscellaneous"),
+                                                        style: GoogleFonts
+                                                            .montserrat(
+                                                                color: Colors
+                                                                    .black),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 15.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                ElevatedButton(
+                                                    style: ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all(toggleCart
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors
+                                                                        .black)),
+                                                    onPressed: () async {
+                                                      if (toggleCart == false)
+                                                        await ds.addtoCart(
+                                                            productData['id']
+                                                                .toString());
+                                                      else
+                                                        await ds.removeFromCart(
+                                                            productData['id']
+                                                                .toString());
+                                                      setState(() {
+                                                        toggleCart =
+                                                            !toggleCart;
+                                                      });
+                                                    },
+                                                    child: Text(
+                                                      toggleCart
+                                                          ? 'Remove from Cart'
+                                                          : 'Add to Cart',
+                                                      style: TextStyle(
+                                                          color: toggleCart
+                                                              ? Colors.black
+                                                              : Colors.white),
+                                                    )),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 20.0),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        color:
+                                                            Colors.transparent,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(80)),
+                                                    child: BouncingWidget(
+                                                      scaleFactor: 3,
+                                                      duration: Duration(
+                                                          milliseconds: 270),
                                                       onPressed: () async {
                                                         if (toggleFav == false)
                                                           await ds.addtoFav(
@@ -267,25 +320,29 @@ class _ProductState extends State<ProductInfo> {
                                                               !toggleFav;
                                                         });
                                                       },
-                                                      icon: Icon(
-                                                          toggleFav
-                                                              ? Icons.favorite
-                                                              : Icons
-                                                                  .favorite_border,
-                                                          color: Colors.red)),
+                                                      child: Icon(
+                                                        toggleFav
+                                                            ? Icons.favorite
+                                                            : Icons
+                                                                .favorite_border,
+                                                        color: Colors.red,
+                                                        size: 30,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        }),
+                            );
+                          }),
+                    ),
                   ),
                 ],
               ),

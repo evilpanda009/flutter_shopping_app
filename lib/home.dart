@@ -25,6 +25,14 @@ class _HomeState extends State<Home> {
     colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
   ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
+  bool first = false;
+  var args;
+  @override
+  void initState() {
+    super.initState();
+    first = true;
+  }
+
   final tabs = [
     Profile(),
     Sell(),
@@ -34,6 +42,11 @@ class _HomeState extends State<Home> {
   ];
   @override
   Widget build(BuildContext context) {
+    args = null;
+    if (first) {
+      args = ModalRoute.of(context)!.settings.arguments ?? null;
+    }
+
     return SafeArea(
         child: Scaffold(
             backgroundColor: bgcolor,
@@ -60,7 +73,7 @@ class _HomeState extends State<Home> {
                 buttonBackgroundColor: Colors.transparent,
                 animationDuration: Duration(milliseconds: 300),
                 height: 55,
-                index: 2,
+                index: args ?? pageNumber,
                 items: <Widget>[
                   Icon(
                     Icons.person,
@@ -85,11 +98,13 @@ class _HomeState extends State<Home> {
                 ],
                 onTap: (index) {
                   setState(() {
+                    first = false;
+                    args = null;
                     pageNumber = index;
                   });
                 },
               ),
             ),
-            body: tabs[pageNumber]));
+            body: args == null ? tabs[pageNumber] : tabs[args]));
   }
 }

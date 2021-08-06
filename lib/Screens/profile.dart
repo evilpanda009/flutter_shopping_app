@@ -1,3 +1,4 @@
+import 'package:bouncing_widget/bouncing_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -69,16 +70,12 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return loading
         ? Loading()
-        : Container(
-            color: Color(0xfff3f0ec),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        : SafeArea(
+            child: Container(
+              color: Color(0xfff3f0ec),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 20,
-                    ),
                     ClipPath(
                       clipper: WaveClipperTwo(),
                       child: Container(
@@ -138,87 +135,80 @@ class _ProfileState extends State<Profile> {
                     ),
 
                     Container(
-                      margin: EdgeInsets.only(top: 250),
+                      color: Colors.transparent,
+                      width: 250,
+                      margin: EdgeInsets.only(top: 150),
                       alignment: Alignment.center,
-                      child: Material(
-                        elevation: 5,
-                        borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(10),
-                          splashColor: Colors.pink,
-                          onTap: () async {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text("Logout"),
-                                      content: Text("Are you sure?"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text("Cancel")),
-                                        TextButton(
-                                            onPressed: () async {
-                                              Navigator.of(context).pop();
-                                              await _auth.signOut();
+                      child: BouncingWidget(
+                        duration: Duration(milliseconds: 250),
+                        scaleFactor: 2,
+                        onPressed: () async {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    title: Text("Logout"),
+                                    content: Text("Are you sure?"),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("Cancel")),
+                                      TextButton(
+                                          onPressed: () async {
+                                            Navigator.of(context).pop();
 
-                                              // for (int i = 0;
-                                              //     i <=
-                                              //         ds.cart!
-                                              //             .length;
-                                              //     i++) {
-                                              //   await ds
-                                              //       .removeFromCart(ds
-                                              //           .cart![i]
-                                              //           .toString());
-                                              // }
-                                            },
-                                            child: Text(
-                                              "Logout",
-                                              style:
-                                                  TextStyle(color: Colors.red),
-                                            ))
-                                      ],
-                                    ));
-                          },
-                          child: Ink(
-                            width: 300,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.red[400],
-                              //gradient: myGradient,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Container(
-                              color: Colors.transparent,
+                                            await AuthService().signOut();
 
-                              constraints: const BoxConstraints(
-                                  minWidth: 88.0,
-                                  minHeight:
-                                      36.0), // min sizes for Material buttons
-                              alignment: Alignment.center,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.power_settings_new_outlined,
-                                      color: Colors.white),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text('Logout',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20,
-                                          color: Colors.white)),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                ],
+                                            // for (int i = 0;
+                                            //     i <=
+                                            //         ds.cart!
+                                            //             .length;
+                                            //     i++) {
+                                            //   await ds
+                                            //       .removeFromCart(ds
+                                            //           .cart![i]
+                                            //           .toString());
+                                            // }
+                                          },
+                                          child: Text(
+                                            "Logout",
+                                            style: TextStyle(color: Colors.red),
+                                          ))
+                                    ],
+                                  ));
+                        },
+                        child: Container(
+                          width: 200,
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(20)),
+
+                          constraints: const BoxConstraints(
+                              minWidth: 88.0,
+                              minHeight:
+                                  36.0), // min sizes for Material buttons
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.power_settings_new_outlined,
+                                  color: Colors.white),
+                              SizedBox(
+                                width: 8,
                               ),
-                            ),
+                              Text('Logout',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.roboto(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                      color: Colors.white)),
+                              SizedBox(
+                                width: 20,
+                              ),
+                            ],
                           ),
                         ),
                       ),

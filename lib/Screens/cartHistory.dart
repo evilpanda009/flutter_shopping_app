@@ -19,7 +19,9 @@ class _CartHistoryState extends State<CartHistory> {
       .collection('carts')
       .orderBy('timestamp', descending: true)
       .snapshots();
-
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +31,9 @@ class _CartHistoryState extends State<CartHistory> {
         title: Text(
           "Past Orders",
           style: TextStyle(
-              color: Colors.black, fontSize: 30, fontWeight: FontWeight.w700),
+              foreground: Paint()..shader = txtgradient1,
+              fontSize: 30,
+              fontWeight: FontWeight.w700),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         titleTextStyle: TextStyle(color: Colors.black),
@@ -68,7 +72,7 @@ class _CartHistoryState extends State<CartHistory> {
                       return Padding(
                         padding: const EdgeInsets.only(
                             top: 8.0, left: 30, right: 30),
-                        child: SizedBox(
+                        child: Container(
                           height: 270,
                           child: Column(
                             children: [
@@ -92,7 +96,9 @@ class _CartHistoryState extends State<CartHistory> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
-                                    color: Colors.grey[200],
+                                    decoration: BoxDecoration(
+                                        color: Colors.deepOrange[50],
+                                        borderRadius: BorderRadius.circular(8)),
                                     child: Center(
                                       child: Padding(
                                         padding: const EdgeInsets.all(15.0),
@@ -129,10 +135,11 @@ class _CartHistoryState extends State<CartHistory> {
                                                           .toString() +
                                                       " "),
                                                   Text(
-                                                    (document['prices'][i] *
-                                                            document['quantity']
-                                                                [i])
-                                                        .toStringAsFixed(2),
+                                                    "\$ " +
+                                                        (document['prices'][i] *
+                                                                document[
+                                                                    'quantity'][i])
+                                                            .toStringAsFixed(2),
                                                   )
                                                 ],
                                               );

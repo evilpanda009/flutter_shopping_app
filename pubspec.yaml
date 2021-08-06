@@ -76,9 +76,11 @@ flutter:
     - assets/load.gif
     - assets/right-drawn-arrow.jpg
     - assets/no_connection.gif
-    - bag.jpg
-    - tag.jpg
-    - heart.jpg
+    - assets/bag.jpg
+    - assets/tag.jpg
+    - assets/heart.jpg
+    - assets/loading1.gif
+    - assets/loading2.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

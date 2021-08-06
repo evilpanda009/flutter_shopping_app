@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -76,14 +77,13 @@ class _CartState extends State<Cart> {
     names = [];
     List prices = [];
     var totalItems;
-    setState(() {});
+    //setState(() {});
     return !isEmpty
         ? FutureBuilder(
             future: getCart(),
             builder: (context, snap) {
               if (snap.connectionState == ConnectionState.done) {
                 if (snap.hasData && snap.data != null) {
-                  print("Not null");
                   List cart = [];
                   for (int i = 0; i < ds.cart!.length; i++)
                     cart.add(int.parse(ds.cart![i].toString()));
@@ -155,7 +155,10 @@ class _CartState extends State<Cart> {
                                       height: 55,
                                       child: Padding(
                                         padding: const EdgeInsets.only(
-                                            top: 8.0, bottom: 8, left: 20),
+                                            top: 8.0,
+                                            bottom: 8,
+                                            left: 20,
+                                            right: 27),
                                         child: Align(
                                             alignment: Alignment.centerLeft,
                                             child: Text(
@@ -163,6 +166,8 @@ class _CartState extends State<Cart> {
                                               style: TextStyle(
                                                   fontSize: 25,
                                                   fontWeight: FontWeight.w500),
+                                              overflow: TextOverflow.fade,
+                                              softWrap: false,
                                             )),
                                       ),
                                     ),
@@ -175,6 +180,7 @@ class _CartState extends State<Cart> {
                                           child: ScrollConfiguration(
                                             behavior: MyBehavior(),
                                             child: ListView.builder(
+                                                key: PageStorageKey('Cart'),
                                                 physics:
                                                     BouncingScrollPhysics(),
                                                 itemCount: ds.cart!.length,
@@ -337,10 +343,18 @@ class _CartState extends State<Cart> {
                                                                       widthFactor:
                                                                           1,
                                                                       child: Row(
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.max,
                                                                           children: [
-                                                                            Text(
-                                                                              "\$ " + data[index]['price'].toString(),
-                                                                              overflow: TextOverflow.fade,
+                                                                            Flexible(
+                                                                              child: Container(
+                                                                                width: 70,
+                                                                                child: Text(
+                                                                                  "\$ " + data[index]['price'].toString(),
+                                                                                  overflow: TextOverflow.fade,
+                                                                                  softWrap: false,
+                                                                                ),
+                                                                              ),
                                                                             ),
                                                                             IconButton(
                                                                                 onPressed: () async {
@@ -431,117 +445,130 @@ class _CartState extends State<Cart> {
                                                 }),
                                           ),
                                         ),
-                                        Positioned(
-                                          left: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              6,
+                                        Positioned.fill(
+                                          // left: MediaQuery.of(context)
+                                          //         .size
+                                          //         .width /
+                                          //     6,
                                           top: MediaQuery.of(context)
-                                                  .size
-                                                  .height /
-                                              1.52,
-                                          child: Material(
-                                            elevation: 5,
-                                            borderRadius:
-                                                BorderRadius.circular(80),
-                                            child: InkWell(
+                                                      .orientation ==
+                                                  Orientation.portrait
+                                              ? MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  1.59
+                                              : MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  2,
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Material(
+                                              elevation: 5,
                                               borderRadius:
-                                                  BorderRadius.circular(30),
-                                              splashColor: Colors.pink,
-                                              onTap: () async {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        AlertDialog(
-                                                          title: Text(
-                                                              "Order Summary"),
-                                                          content: Text(
-                                                              "Pay on delivery\nTotal amount to be paid:  \$ ${total.toStringAsFixed(2)}"),
-                                                          actions: [
-                                                            TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                child: Text(
-                                                                    "Cancel")),
-                                                            TextButton(
-                                                                onPressed:
-                                                                    () async {
-                                                                  await ds.orderHistory(
-                                                                      names,
-                                                                      prices,
-                                                                      ds.quantity,
-                                                                      total);
+                                                  BorderRadius.circular(80),
+                                              child: InkWell(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                splashColor: Colors.pink,
+                                                onTap: () async {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder:
+                                                          (context) =>
+                                                              AlertDialog(
+                                                                title: Text(
+                                                                    "Order Summary"),
+                                                                content: Text(
+                                                                    "Pay on delivery\nTotal amount to be paid:  \$ ${total.toStringAsFixed(2)}"),
+                                                                actions: [
+                                                                  TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child: Text(
+                                                                          "Cancel")),
+                                                                  TextButton(
+                                                                      onPressed:
+                                                                          () async {
+                                                                        await ds.orderHistory(
+                                                                            names,
+                                                                            prices,
+                                                                            ds.quantity,
+                                                                            total);
 
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  // for (int i = 0;
-                                                                  //     i <=
-                                                                  //         ds.cart!
-                                                                  //             .length;
-                                                                  //     i++) {
-                                                                  //   await ds
-                                                                  //       .removeFromCart(ds
-                                                                  //           .cart![i]
-                                                                  //           .toString());
-                                                                  // }
-                                                                  await ds
-                                                                      .clearCart();
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                        // for (int i = 0;
+                                                                        //     i <=
+                                                                        //         ds.cart!
+                                                                        //             .length;
+                                                                        //     i++) {
+                                                                        //   await ds
+                                                                        //       .removeFromCart(ds
+                                                                        //           .cart![i]
+                                                                        //           .toString());
+                                                                        // }
+                                                                        await ds
+                                                                            .clearCart();
 
-                                                                  setState(
-                                                                      () {});
-                                                                },
-                                                                child: Text(
-                                                                    "Place order"))
-                                                          ],
-                                                        ));
-                                              },
-                                              child: Ink(
-                                                width: 260,
-                                                height: 52,
-                                                decoration: BoxDecoration(
-                                                  gradient: myGradient,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0),
-                                                ),
-                                                child: Container(
-                                                  color: Colors.transparent,
+                                                                        setState(
+                                                                            () {});
+                                                                      },
+                                                                      child: Text(
+                                                                          "Place order"))
+                                                                ],
+                                                              ));
+                                                },
+                                                child: Ink(
+                                                  width: 240,
+                                                  height: 52,
+                                                  decoration: BoxDecoration(
+                                                    gradient: myGradient,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30.0),
+                                                  ),
+                                                  child: Container(
+                                                    color: Colors.transparent,
 
-                                                  constraints: const BoxConstraints(
-                                                      minWidth: 88.0,
-                                                      minHeight:
-                                                          36.0), // min sizes for Material buttons
-                                                  alignment: Alignment.center,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                          Icons
-                                                              .arrow_forward_ios,
-                                                          color: Colors.white),
-                                                      Text('Checkout',
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: GoogleFonts
-                                                              .openSans(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontSize: 20,
-                                                                  color: Colors
-                                                                      .white)),
-                                                      SizedBox(
-                                                        width: 20,
-                                                      ),
-                                                    ],
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                            minWidth: 88.0,
+                                                            minHeight:
+                                                                36.0), // min sizes for Material buttons
+                                                    alignment: Alignment.center,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                            Icons
+                                                                .arrow_forward_ios,
+                                                            color:
+                                                                Colors.white),
+                                                        Text('Checkout',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: GoogleFonts
+                                                                .openSans(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontSize:
+                                                                        20,
+                                                                    color: Colors
+                                                                        .white)),
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -611,12 +638,16 @@ class _CartState extends State<Cart> {
                           }
                           return Empty();
                         }
-                        return Center(child: CircularProgressIndicator());
+                        return Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.deepOrange,
+                        ));
                       });
                 }
                 return Empty();
               }
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(color: Colors.deepOrange));
             })
         : Empty();
   }

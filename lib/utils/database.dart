@@ -224,7 +224,6 @@ class DatabaseService {
     } catch (e) {
       print(e.toString());
     }
-    return null;
   }
 
   Future<void> addtoFav(String id) async {
@@ -254,6 +253,19 @@ class DatabaseService {
       print(e.toString());
     }
     return null;
+  }
+
+  Future<void> deleteProduct(String id) async {
+    await getUserData();
+    await db.collection('products').doc(id).delete();
+    await db.collection('users').get().then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        querySnapshot.docs.forEach((doc) async {
+          await removeFromCart(doc.id);
+          await removeFromFav(doc.id);
+        });
+      }
+    });
   }
 }
 
