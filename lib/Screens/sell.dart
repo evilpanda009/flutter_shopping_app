@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _SellState extends State<Sell> {
         iconTheme: IconThemeData(color: Colors.black),
         toolbarHeight: 60,
         title: Text(
-          "My Products",
+          "Sell Products",
           style: TextStyle(
               foreground: Paint()..shader = txtgradient1,
               fontSize: 30,
@@ -82,13 +83,14 @@ class _SellState extends State<Sell> {
           )
         ],
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<QuerySnapshot>(
           stream: productStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Loading();
             }
+
             if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
               var finalData = snapshot.data!.docs;
               List<QueryDocumentSnapshot<Object?>> data = [];
@@ -96,8 +98,10 @@ class _SellState extends State<Sell> {
                 if ((doc.data()! as Map<String, dynamic>)['user'] ==
                     user.toString()) {
                   data.add(doc);
+                  print(data[0]);
                 }
               }
+              if (data.length == 0) return EmptySell();
 
               return ListView.builder(
                   key: PageStorageKey('Sell'),
@@ -200,6 +204,9 @@ class _SellState extends State<Sell> {
                                                             TextButton(
                                                                 onPressed:
                                                                     () async {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
                                                                   await ds.deleteProduct(
                                                                       data[index]
                                                                               [
@@ -248,10 +255,58 @@ class _SellState extends State<Sell> {
                     );
                   });
             }
-            return Empty();
+
+            return EmptySell();
             // } else
             //   return Loading();
           }),
+    );
+  }
+}
+
+class EmptySell extends StatelessWidget {
+  const EmptySell({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        height: double.infinity,
+        width: double.infinity,
+        color: Colors.white,
+        child: Column(
+          children: [
+            Container(
+              height: 100,
+              width: 100,
+              margin: EdgeInsets.only(
+                  left: (MediaQuery.of(context).size.width / 2), top: 30),
+              child: Image.asset("assets/arrow.jpg"),
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            Center(
+              child: SizedBox(
+                width: 250,
+                child: Text(
+                  "Add a product to Shop",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 30,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
+            Center(
+                child: Container(
+                    height: 300,
+                    child: Image.asset('assets/featured-products.jpg')))
+          ],
+        ),
+      ),
     );
   }
 }

@@ -110,7 +110,7 @@ class _EditProductState extends State<EditProduct> {
               appBar: AppBar(
                 centerTitle: true,
                 title: Text(
-                  "Edit Details",
+                  "Edit Product",
                   style: TextStyle(
                       foreground: Paint()..shader = txtgradient1,
                       fontSize: 30,

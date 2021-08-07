@@ -55,7 +55,7 @@ class AuthService {
       print(userCredential.user);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'invalid-email') err = "Email Id format is incorrect";
+      if (e.code == 'invalid-email') err = "Email ID format is incorrect";
       if (e.code == 'user-not-found') {
         err =
             "Account does not exist, Please create a new account or Sign Up with Google";

@@ -30,6 +30,10 @@ Future<void> main() async {
   //     statusBarColor: const Color(0xFF0094d4) // status bar color 0xFF0094d4
   //     ));
   await Firebase.initializeApp();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(MyApp());
 }
 

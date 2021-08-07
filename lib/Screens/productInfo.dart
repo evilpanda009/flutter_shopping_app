@@ -1,6 +1,7 @@
 import 'package:bouncing_widget/bouncing_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shopping_app/utils/database.dart';
@@ -33,8 +34,23 @@ class _ProductState extends State<ProductInfo> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
     get();
     //   fav = ds.fav;
+  }
+
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   Future<void> get() async {
@@ -53,6 +69,23 @@ class _ProductState extends State<ProductInfo> {
   final LinearGradient gradient1 = LinearGradient(
     colors: <Color>[Colors.orange[100]!, Colors.pink[100]!],
   );
+  DateTime? loginClickTime;
+
+  bool isRedundentClick(DateTime currentTime) {
+    if (loginClickTime == null) {
+      loginClickTime = currentTime;
+      print("first click");
+      return false;
+    }
+    print('diff is ${currentTime.difference(loginClickTime!).inSeconds}');
+    if (currentTime.difference(loginClickTime!).inSeconds < 1) {
+      //set this difference time in seconds
+      return true;
+    }
+
+    loginClickTime = currentTime;
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +167,7 @@ class _ProductState extends State<ProductInfo> {
                               child: Image.network(productData['image'],
                                   errorBuilder: (context, error, stackTrace) {
                                 return Image.asset(
-                                  'assets/no_connection.gif',
+                                  'assets/no-internet.gif',
                                 );
                               }),
                             ),
@@ -145,7 +178,7 @@ class _ProductState extends State<ProductInfo> {
                   ),
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: DraggableScrollableSheet(
                           initialChildSize: 0.5,
                           minChildSize: 0.4,
@@ -160,8 +193,12 @@ class _ProductState extends State<ProductInfo> {
                                   child: Container(
                                     //margin: EdgeInsets.only(
                                     //top: MediaQuery.of(context).size.height / 2.2),
-                                    height: MediaQuery.of(context).size.height *
-                                        0.78,
+                                    height: MediaQuery.of(context)
+                                                .orientation ==
+                                            Orientation.portrait
+                                        ? MediaQuery.of(context).size.height *
+                                            0.78
+                                        : 400,
                                     //-
                                     //     MediaQuery.of(context).size.height / 2.2,
                                     decoration: BoxDecoration(
@@ -253,44 +290,68 @@ class _ProductState extends State<ProductInfo> {
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                top: 15.0),
+                                                top: 20.0),
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text("By " +
+                                                  (productData['seller'] ??
+                                                      "Shopr House")),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 30.0),
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                ElevatedButton(
-                                                    style: ButtonStyle(
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all(toggleCart
+                                                SizedBox(
+                                                  height: 50,
+                                                  child: ElevatedButton(
+                                                      style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all(toggleCart
+                                                                      ? Colors
+                                                                          .white
+                                                                      : Colors
+                                                                          .black)),
+                                                      onPressed: () async {
+                                                        if (toggleCart ==
+                                                            false) {
+                                                          if (isRedundentClick(
+                                                              DateTime.now())) {
+                                                            print(
+                                                                'hold on, processing');
+                                                            return;
+                                                          }
+                                                          await ds.addtoCart(
+                                                              productData['id']
+                                                                  .toString());
+                                                        } else
+                                                          await ds.removeFromCart(
+                                                              productData['id']
+                                                                  .toString());
+                                                        setState(() {
+                                                          toggleCart =
+                                                              !toggleCart;
+                                                        });
+                                                      },
+                                                      child: Text(
+                                                        toggleCart
+                                                            ? 'REMOVE FROM CART'
+                                                            : 'ADD TO CART',
+                                                        style: GoogleFonts
+                                                            .montserrat(
+                                                                fontSize: 16,
+                                                                color: toggleCart
                                                                     ? Colors
-                                                                        .white
+                                                                        .black
                                                                     : Colors
-                                                                        .black)),
-                                                    onPressed: () async {
-                                                      if (toggleCart == false)
-                                                        await ds.addtoCart(
-                                                            productData['id']
-                                                                .toString());
-                                                      else
-                                                        await ds.removeFromCart(
-                                                            productData['id']
-                                                                .toString());
-                                                      setState(() {
-                                                        toggleCart =
-                                                            !toggleCart;
-                                                      });
-                                                    },
-                                                    child: Text(
-                                                      toggleCart
-                                                          ? 'Remove from Cart'
-                                                          : 'Add to Cart',
-                                                      style: TextStyle(
-                                                          color: toggleCart
-                                                              ? Colors.black
-                                                              : Colors.white),
-                                                    )),
+                                                                        .white),
+                                                      )),
+                                                ),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.only(
@@ -307,11 +368,18 @@ class _ProductState extends State<ProductInfo> {
                                                       duration: Duration(
                                                           milliseconds: 270),
                                                       onPressed: () async {
-                                                        if (toggleFav == false)
+                                                        if (toggleFav ==
+                                                            false) {
+                                                          if (isRedundentClick(
+                                                              DateTime.now())) {
+                                                            print(
+                                                                'hold on, processing');
+                                                            return;
+                                                          }
                                                           await ds.addtoFav(
                                                               productData['id']
                                                                   .toString());
-                                                        else
+                                                        } else
                                                           await ds.removeFromFav(
                                                               productData['id']
                                                                   .toString());

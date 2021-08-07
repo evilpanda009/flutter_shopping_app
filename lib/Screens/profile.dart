@@ -19,7 +19,7 @@ class _ProfileState extends State<Profile> {
   late String name, email;
   bool loading = true;
   final LinearGradient myGradient = LinearGradient(
-    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+    colors: <Color>[Colors.orange[300]!, Colors.pink[300]!],
   );
   final Shader txtgradient = LinearGradient(
     colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
@@ -77,21 +77,17 @@ class _ProfileState extends State<Profile> {
                 child: Column(
                   children: [
                     ClipPath(
-                      clipper: WaveClipperTwo(),
+                      clipper: OvalBottomBorderClipper(),
                       child: Container(
                         height: 200,
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                          Colors.orange[400]!,
-                          Colors.pink[300]!
-                        ])),
+                        decoration: BoxDecoration(gradient: myGradient),
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.center,
                           child: Text(
                             "Profile",
                             style: TextStyle(
-                                fontSize: 35,
+                                fontSize: 40,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white
                                 //foreground: Paint()..shader = txtgradient1,
@@ -105,7 +101,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     //CircleAvatar(backgroundImage: _auth.,)
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.center,
                       child: Text(
                         name,
                         style: TextStyle(fontSize: 25),
@@ -115,6 +111,7 @@ class _ProfileState extends State<Profile> {
                       height: 40,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.email),
                         SizedBox(
@@ -123,8 +120,11 @@ class _ProfileState extends State<Profile> {
                         Text(email, style: TextStyle(fontSize: 15)),
                       ],
                     ),
+                    SizedBox(
+                      height: 30,
+                    ),
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.center,
                       child: TextButton.icon(
                           onPressed: () {
                             Navigator.pushNamed(context, '/history');

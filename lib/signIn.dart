@@ -108,7 +108,7 @@ class _SignInState extends State<SignIn> {
                                                 3), // changes position of shadow
                                           )
                                         ],
-                                        color: Colors.pink[50],
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10)),
                                       ),
@@ -143,7 +143,7 @@ class _SignInState extends State<SignIn> {
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w700,
-                                          color: Colors.amber,
+                                          color: Colors.orange,
                                           fontSize: 20,
                                         ),
                                       ),
@@ -160,7 +160,7 @@ class _SignInState extends State<SignIn> {
                                                 3), // changes position of shadow
                                           )
                                         ],
-                                        color: Colors.pink[50],
+                                        color: Colors.white,
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10)),
                                       ),
@@ -171,7 +171,7 @@ class _SignInState extends State<SignIn> {
                                             password = val;
                                           });
                                         },
-                                        cursorColor: Colors.amber,
+                                        cursorColor: Colors.orange,
                                         obscureText: obscure,
                                         decoration: InputDecoration(
                                           labelText: "Password",
@@ -212,7 +212,7 @@ class _SignInState extends State<SignIn> {
                                             TextAlignVertical.center,
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
-                                          color: Colors.tealAccent[700],
+                                          color: Colors.orange,
                                           fontWeight: FontWeight.w700,
                                           fontSize: 20,
                                         ),
@@ -399,7 +399,8 @@ class _SignInState extends State<SignIn> {
                                     if (user == null) {
                                       setState(() {
                                         loading = false;
-                                        error = "Sign in failed";
+                                        error =
+                                            "Sign in failed, Check internet connection";
                                       });
                                     } else {
                                       dynamic add = await AddUser(

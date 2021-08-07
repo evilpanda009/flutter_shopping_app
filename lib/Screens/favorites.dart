@@ -87,10 +87,10 @@ class _FavState extends State<Favorites> {
                                 title: Text(
                                   "My Favorites ",
                                   style: TextStyle(
-                                      fontSize: 40,
+                                      fontSize: 35,
                                       foreground: Paint()
                                         ..shader = txtgradient1,
-                                      fontWeight: FontWeight.w600),
+                                      fontWeight: FontWeight.w700),
                                 ),
                                 elevation: 5,
                               ),
@@ -105,7 +105,11 @@ class _FavState extends State<Favorites> {
                                         int.parse(data[index]['id'].toString());
 
                                     return Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.only(
+                                          top: 6.0,
+                                          bottom: 6,
+                                          left: 18,
+                                          right: 18),
                                       child: Dismissible(
                                         key: Key(data[index]['id'].toString()),
                                         background: Container(
@@ -167,59 +171,59 @@ class _FavState extends State<Favorites> {
                                                 .then((value) =>
                                                     {setState(() {})});
                                           },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 12, right: 12),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.grey,
-                                                        blurRadius: 2,
-                                                        spreadRadius: 1,
-                                                        offset: Offset(0, 3))
-                                                  ],
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(5))),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Container(
-                                                        height: 150,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      color: Colors.grey,
+                                                      blurRadius: 2,
+                                                      spreadRadius: 1,
+                                                      offset: Offset(0, 3))
+                                                ],
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5))),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                      height: 150,
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(8),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  top: 8.0,
-                                                                  bottom: 8,
-                                                                  left: 8,
-                                                                  right: 8),
-                                                          child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15),
-                                                            child: Image.network(
-                                                                data[index]
-                                                                    ['image'],
-                                                                errorBuilder:
-                                                                    (context,
-                                                                        error,
-                                                                        stackTrace) {
-                                                              return Image.asset(
-                                                                  'assets/cart.jpg');
-                                                            }),
-                                                          ),
-                                                        )),
-                                                  ),
-                                                  Expanded(
-                                                    child: Column(
-                                                      children: [
-                                                        Align(
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 8.0,
+                                                                bottom: 8,
+                                                                left: 8,
+                                                                right: 8),
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(15),
+                                                          child: Image.network(
+                                                              data[index]
+                                                                  ['image'],
+                                                              errorBuilder:
+                                                                  (context,
+                                                                      error,
+                                                                      stackTrace) {
+                                                            return Image.asset(
+                                                                'assets/cart.jpg');
+                                                          }),
+                                                        ),
+                                                      )),
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 8.0),
+                                                        child: Align(
                                                           alignment: Alignment
                                                               .centerLeft,
                                                           child: Text(
@@ -230,66 +234,66 @@ class _FavState extends State<Favorites> {
                                                                     .ellipsis,
                                                           ),
                                                         ),
-                                                        SizedBox(height: 20),
-                                                        Align(
-                                                          alignment: Alignment
-                                                              .centerLeft,
-                                                          child: Text(
-                                                            "\$ " +
-                                                                data[index][
-                                                                        'price']
-                                                                    .toString(),
-                                                            style: TextStyle(
-                                                                fontSize: 18,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                          ),
+                                                      ),
+                                                      SizedBox(height: 20),
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        child: Text(
+                                                          "\$ " +
+                                                              data[index]
+                                                                      ['price']
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
                                                         ),
-                                                        Align(
-                                                          alignment: Alignment
-                                                              .centerRight,
-                                                          child: IconButton(
-                                                            icon: Icon(
-                                                              Icons
-                                                                  .delete_outline,
-                                                              color: Colors.red,
-                                                              size: 28,
-                                                            ),
-                                                            onPressed: () {
-                                                              showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (context) =>
-                                                                          AlertDialog(
-                                                                            title:
-                                                                                Text("Remove from Favorites?"),
-                                                                            content:
-                                                                                Text("The item will no longer appear in your Favorites."),
-                                                                            actions: [
-                                                                              TextButton(
-                                                                                  onPressed: () {
-                                                                                    Navigator.of(context).pop();
-                                                                                  },
-                                                                                  child: Text("Cancel")),
-                                                                              TextButton(
-                                                                                  onPressed: () async {
-                                                                                    Navigator.of(context).pop();
-                                                                                    await ds.removeFromFav(id.toString());
-                                                                                    setState(() {});
-                                                                                  },
-                                                                                  child: Text("Remove", style: TextStyle(color: Colors.red)))
-                                                                            ],
-                                                                          ));
-                                                            },
+                                                      ),
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: IconButton(
+                                                          icon: Icon(
+                                                            Icons
+                                                                .delete_outline,
+                                                            color: Colors.red,
+                                                            size: 28,
                                                           ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                                                          onPressed: () {
+                                                            showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) =>
+                                                                        AlertDialog(
+                                                                          title:
+                                                                              Text("Remove from Favorites?"),
+                                                                          content:
+                                                                              Text("The item will no longer appear in your Favorites."),
+                                                                          actions: [
+                                                                            TextButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.of(context).pop();
+                                                                                },
+                                                                                child: Text("Cancel")),
+                                                                            TextButton(
+                                                                                onPressed: () async {
+                                                                                  Navigator.of(context).pop();
+                                                                                  await ds.removeFromFav(id.toString());
+                                                                                  setState(() {});
+                                                                                },
+                                                                                child: Text("Remove", style: TextStyle(color: Colors.red)))
+                                                                          ],
+                                                                        ));
+                                                          },
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
                                             ),
                                           ),
                                         ),

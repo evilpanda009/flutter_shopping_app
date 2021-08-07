@@ -58,7 +58,7 @@ class _HomeState extends State<Home> {
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10)),
                 gradient: LinearGradient(colors: [
-                  Colors.orange[400]!,
+                  Colors.orange[300]!,
                   Colors.pink[300]!
                 ] //Color(0xFF00D0E1), Color(0xFF00B3FA)],
                     // begin: Alignment.topLeft,

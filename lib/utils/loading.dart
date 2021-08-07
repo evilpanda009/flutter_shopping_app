@@ -9,10 +9,11 @@ class Loading extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Color(0xfff3f0ec),
+        //color: Color(0xfff3f0ec),
+        color: Colors.white,
         child: Center(
           child: Image.asset(
-            'assets/load.gif',
+            'assets/splash2.gif',
             height: 300,
             width: 320,
           ),
@@ -30,11 +31,14 @@ class Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Color(0xfff3f0ec),
-        child: Image.asset(
-          'assets/flame1.gif',
-          height: 120,
-          width: 120,
+        //color: Color(0xfff3f0ec),
+        color: Colors.white,
+        child: Center(
+          child: Image.asset(
+            'assets/signIn.gif',
+            height: 400,
+            width: 300,
+          ),
         ),
       ),
     );
@@ -46,11 +50,13 @@ class ErrorGif extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Color(0xfff3f0ec),
-        child: Image.asset(
-          'assets/no_connection.gif',
-          height: 120,
-          width: 120,
+        color: Colors.white,
+        child: Center(
+          child: Image.asset(
+            'assets/no_connection.gif',
+            height: 120,
+            width: 120,
+          ),
         ),
       ),
     );

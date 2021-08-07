@@ -16,6 +16,7 @@ class ProductData {
   double? price;
   String? category = "Miscellaneous";
   String? image;
+  String? seller;
 
   DatabaseService ds = DatabaseService();
 

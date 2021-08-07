@@ -415,7 +415,7 @@ class _SellItemState extends State<SellItem> {
                                   });
                                   product!.image = await ds.uploadImage(_image);
                                   await ds.addProduct(product);
-                                  Navigator.pop(context);
+                                  Navigator.of(context).pop();
                                 }
                               },
                               child: Ink(

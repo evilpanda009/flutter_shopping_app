@@ -48,6 +48,7 @@ dependencies:
   firebase_storage: ^10.0.1
   uuid: ^3.0.4
   bouncing_widget: ^2.0.0
+  flutter_launcher_icons: ^0.9.1
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,23 @@ flutter:
     - assets/heart.jpg
     - assets/loading1.gif
     - assets/loading2.gif
+    - assets/no-internet.gif
+    - assets/arrow.jpg
+    - assets/cart.gif
+    - assets/empty-box.gif
+    - assets/packing.gif
+    - assets/signIn.gif
+    - assets/logo1.jpg
+    - assets/splash2.gif
+    - assets/Login Colored.json
+    - assets/featured-products.jpg
+    - assets/shopping-cart.svg
+    - assets/logo_final.png
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo_final.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

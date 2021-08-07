@@ -31,13 +31,6 @@ class _MarketState extends State<Market>
   DatabaseService ds = DatabaseService();
   bool notFound = false;
 
-  List<Color> colList = [
-    Colors.amberAccent,
-    Colors.orangeAccent,
-    Colors.pinkAccent,
-    Colors.purple,
-    Colors.lightBlue
-  ];
   final _random = new Random();
   void getData() async {
     Response res = await get(Uri.parse(url));
@@ -91,6 +84,8 @@ class _MarketState extends State<Market>
     });
   }
 
+  final txtController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -99,6 +94,10 @@ class _MarketState extends State<Market>
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 450));
   }
+
+  final Shader txtgradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   final Stream<QuerySnapshot> productStream = FirebaseFirestore.instance
       .collection('products')
@@ -157,14 +156,20 @@ class _MarketState extends State<Market>
   }
 
   void search(String searchkey) {
-    setState(() {
-      stream = FirebaseFirestore.instance
-          .collection('products')
-          .orderBy('title')
-          .where('title', isGreaterThanOrEqualTo: searchkey)
-          .where('title', isLessThan: searchkey + 'z')
-          .snapshots();
-    });
+    if (searchkey.trim() == "" || searchkey.isEmpty) {
+      setState(() {
+        stream = productStream;
+      });
+    } else {
+      setState(() {
+        stream = FirebaseFirestore.instance
+            .collection('products')
+            .orderBy('title')
+            .where('title', isGreaterThanOrEqualTo: searchkey)
+            .where('title', isLessThan: searchkey + 'z')
+            .snapshots();
+      });
+    }
   }
 
   List? cart = [];
@@ -192,6 +197,9 @@ class _MarketState extends State<Market>
   // if (cart == null) cart = [];
   // if (fav == null) fav = [];
 
+  final LinearGradient myGradient = LinearGradient(
+    colors: <Color>[Colors.orange[100]!, Colors.pink[100]!],
+  );
   late Map<String, dynamic> userdata;
 
   final List categoryList = <String>[
@@ -205,6 +213,7 @@ class _MarketState extends State<Market>
     r"Men's Accessories",
     r"Miscellaneous"
   ];
+  Color filledcolor = Colors.grey[200]!;
 
   @override
   Widget build(BuildContext context) {
@@ -243,94 +252,109 @@ class _MarketState extends State<Market>
                 userdata = snapshot.data!.data() as Map<String, dynamic>;
                 name = userdata['name'];
                 return Scaffold(
-                    drawer: Drawer(
-                        child: SingleChildScrollView(
-                      physics: ScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ClipPath(
-                            clipper: WaveClipperTwo(),
-                            child: Container(
-                                // decoration: BoxDecoration(
-                                //     color: Colors.red,
-                                //     borderRadius: BorderRadius.only(
-                                //         bottomLeft: Radius.circular(15),
-                                //         bottomRight: Radius.circular(15))),
-                                color: Colors.red,
-                                height: 200,
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, top: 30),
-                                  child: Text("Hi,\n$name",
-                                      maxLines: 3,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: true,
-                                      style: GoogleFonts.montserrat(
-                                          height: 2,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 1)),
-                                )),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      WidgetSpan(
-                                        child:
-                                            Icon(Icons.sell_rounded, size: 14),
-                                      ),
-                                      TextSpan(
-                                        text: " Categories",
-                                        style: GoogleFonts.montserrat(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 20,
-                                            color: Colors.black),
-                                      ),
-                                    ],
+                    drawer: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(10.0),
+                          topRight: Radius.circular(10)),
+                      child: Drawer(
+                          child: SingleChildScrollView(
+                        physics: ScrollPhysics(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ClipPath(
+                              clipper: OvalBottomBorderClipper(),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: myGradient,
+                                    // borderRadius: BorderRadius.only(
+                                    //     bottomLeft: Radius.circular(15),
+                                    //     bottomRight: Radius.circular(15))
                                   ),
-                                )),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.all(0),
-                                shrinkWrap: true,
-                                itemCount: categoryList.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: GestureDetector(
-                                        onTap: () {
-                                          categories(
-                                              categoryList[index].toString());
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          categoryList[index].toString(),
-                                          style: GoogleFonts.montserrat(),
-                                        )),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    )),
+                                  //color: Colors.red,
+
+                                  height: 200,
+                                  width: double.infinity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, top: 30),
+                                    child: Text("Hi,\n$name",
+                                        maxLines: 3,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: true,
+                                        style: GoogleFonts.montserrat(
+                                            height: 1.7,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 1)),
+                                  )),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        WidgetSpan(
+                                          child: Icon(Icons.sell_rounded,
+                                              size: 14),
+                                        ),
+                                        TextSpan(
+                                          text: " Categories",
+                                          style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 20,
+                                              color: Colors.black),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              child: ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.all(0),
+                                  shrinkWrap: true,
+                                  itemCount: categoryList.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            categories(
+                                                categoryList[index].toString());
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                            categoryList[index].toString(),
+                                            style: GoogleFonts.montserrat(),
+                                          )),
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
+                      )),
+                    ),
                     appBar: AppBar(
-                      title: Text("Marketplace"),
+                      backgroundColor: Colors.white,
+                      iconTheme: IconThemeData(color: Colors.black),
+                      title: Text(
+                        "Shop",
+                        style: GoogleFonts.montserrat(
+                            foreground: Paint()..shader = txtgradient1,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700),
+                      ),
                       actions: [
                         PopupMenuButton<String>(
                           onSelected: handleClick,
                           itemBuilder: (BuildContext context) {
                             return {
-                              'Price Ascending',
-                              'Price Descending',
+                              'Price Low to High',
+                              'Price High to Low',
                               'Alphabetical'
                             }.map((String choice) {
                               return PopupMenuItem<String>(
@@ -364,10 +388,68 @@ class _MarketState extends State<Market>
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10.0),
                               child: Column(children: [
-                                TextField(
-                                  onChanged: (value) {
-                                    search(value);
-                                  },
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        //color: Colors.grey,
+                                        gradient: myGradient,
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: TextField(
+                                      cursorColor: Colors.black,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      controller: txtController,
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            "Search", //\u1d5d\u1d49\u1d57\u1d43 ",
+                                        alignLabelWithHint: true,
+                                        suffix: IconButton(
+                                          icon: Icon(
+                                            Icons.close,
+                                            color: Colors.black,
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            txtController.text = "";
+                                            search("");
+                                          },
+                                        ),
+                                        //filled: true,
+                                        //fillColor: Colors.white,
+                                        prefixIcon: Icon(
+                                          Icons.search,
+                                          color: Colors.black,
+                                        ),
+                                        contentPadding:
+                                            EdgeInsets.only(top: 25),
+                                        border: InputBorder.none,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        //   (
+                                        //       color: Colors.orange, width: 1.5),
+                                        // ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.5),
+                                        ),
+                                      ),
+                                      onSubmitted: (value) {
+                                        search(value.trim());
+                                      },
+                                    ),
+                                  ),
                                 ),
                                 SizedBox(
                                   height: 10,
@@ -383,7 +465,11 @@ class _MarketState extends State<Market>
                                       key: PageStorageKey("List"),
                                       physics: BouncingScrollPhysics(),
                                       controller: controller,
-                                      crossAxisCount: 2,
+                                      crossAxisCount:
+                                          MediaQuery.of(context).orientation ==
+                                                  Orientation.portrait
+                                              ? 2
+                                              : 3,
                                       crossAxisSpacing: 3,
                                       mainAxisSpacing: 3,
                                       itemCount: data.length,
@@ -440,7 +526,7 @@ class _MarketState extends State<Market>
                                                               (context, error,
                                                                   stackTrace) {
                                                             return Image.asset(
-                                                              'assets/no_connection.gif',
+                                                              'assets/no-internet.gif',
                                                               height: 150,
                                                               fit: BoxFit
                                                                   .contain,
@@ -563,11 +649,14 @@ class _MarketState extends State<Market>
                                                             bottom: 10.0,
                                                             left: 15,
                                                             right: 10),
-                                                    child: Text(
-                                                      data[index]['title'],
-                                                      maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                    child: SizedBox(
+                                                      height: 40,
+                                                      child: Text(
+                                                        data[index]['title'],
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
                                                     ),
                                                   )
                                                 ],

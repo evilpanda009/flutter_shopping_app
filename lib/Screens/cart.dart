@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -28,11 +29,26 @@ class _CartState extends State<Cart> {
   late List? dataAll;
   late var res;
   Button button = Button();
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getCart();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
   final LinearGradient myGradient = LinearGradient(
     colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
   );
@@ -104,7 +120,7 @@ class _CartState extends State<Cart> {
                                 data.add(dataAll![i]);
                             }
                             //print(data.toString());
-                            for (int i = 0; i < ds.cart!.length; i++) {
+                            for (int i = 0; i < data.length; i++) {
                               print(data[i]['id']);
                               total = total +
                                   data[i]['price'] *
@@ -669,7 +685,7 @@ class _EmptyState extends State<Empty> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xfff3f0ec),
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         title: Padding(
@@ -700,14 +716,14 @@ class _EmptyState extends State<Empty> {
         child: Container(
             height: MediaQuery.of(context).size.height,
             constraints: BoxConstraints.expand(),
-            color: Color(0xfff3f0ec),
+            color: Colors.white,
             child: Column(
               children: [
                 Expanded(
                   flex: 4,
                   child: Container(
                     child: Image.asset(
-                      'assets/cart.jpg',
+                      'assets/cart.gif',
                       height: 300,
                       width: 300,
                     ),

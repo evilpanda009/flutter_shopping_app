@@ -26,6 +26,21 @@ class DatabaseService {
   //   return ProductCollection.snapshots().map(listOfProducts);
   // }
 
+  Future<void> updateTemp() async {
+    await db
+        .collection('products')
+        .orderBy('id')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) async {
+        await db
+            .collection('products')
+            .doc(doc.id)
+            .update({'seller': "Shopr House"});
+      });
+    });
+  }
+
   Future<void> addProducts(data) async {
     for (int i = 0; i < data.length; i++) {
       await db.collection('products').doc(data[i]['id'].toString()).set({
@@ -73,6 +88,8 @@ class DatabaseService {
 
   Future<void> addProduct(ProductData? data) async {
     int id = 99;
+    var user = auth.getUser().toString();
+    var username;
     await db
         .collection('products')
         .orderBy('id', descending: true)
@@ -91,21 +108,32 @@ class DatabaseService {
       print(error.toString());
     });
 
-    if (data != null)
+    if (data != null) {
       await db
-          .collection('products')
-          .doc(id.toString())
-          .set({
-            'id': id,
-            'title': data.title,
-            'desc': data.desc,
-            'price': data.price,
-            'image': data.image,
-            'category': data.category ?? "Miscellaneous",
-            'user': auth.getUser().toString()
-          })
-          .then((value) => null)
-          .onError((error, stackTrace) => null);
+          .collection('users')
+          .doc(user)
+          .get()
+          .then((DocumentSnapshot snapshot) async {
+        Map<String, dynamic> userdata = snapshot.data() as Map<String, dynamic>;
+        username = userdata['name'];
+        print("Uploading......");
+        await db
+            .collection('products')
+            .doc(id.toString())
+            .set({
+              'id': id,
+              'title': data.title,
+              'desc': data.desc,
+              'price': data.price,
+              'image': data.image,
+              'category': data.category ?? "Miscellaneous",
+              'user': auth.getUser().toString(),
+              'seller': username.toString()
+            })
+            .then((value) => null)
+            .onError((error, stackTrace) => null);
+      });
+    }
   }
 
   //Future getProduct() async {}
@@ -261,8 +289,8 @@ class DatabaseService {
     await db.collection('users').get().then((QuerySnapshot querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
         querySnapshot.docs.forEach((doc) async {
-          await removeFromCart(doc.id);
-          await removeFromFav(doc.id);
+          await removeFromCart(id);
+          await removeFromFav(id);
         });
       }
     });
