@@ -121,12 +121,12 @@ class _MarketState extends State<Market>
 
   void handleClick(String value) {
     switch (value) {
-      case 'Price Ascending':
+      case 'Price Low to High':
         setState(() {
           stream = productStream1;
         });
         break;
-      case 'Price Descending':
+      case 'Price High to Low':
         setState(() {
           stream = productStream2;
         });
