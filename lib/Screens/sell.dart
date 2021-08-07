@@ -290,7 +290,7 @@ class EmptySell extends StatelessWidget {
               child: SizedBox(
                 width: 250,
                 child: Text(
-                  "Add a product to Shop",
+                  "Sell a product on Shop",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.grey[700],

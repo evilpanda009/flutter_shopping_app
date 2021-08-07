@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shopping_app/register.dart';
 import 'package:animations/animations.dart';
@@ -28,6 +29,9 @@ class _SignInState extends State<SignIn> {
 
   final LinearGradient myGradient = LinearGradient(
     colors: <Color>[Colors.orange[400]!, Colors.pink[300]!],
+  );
+  var myGradient1 = LinearGradient(
+    colors: <Color>[Colors.orange[200]!, Colors.pink[100]!],
   );
   final Shader txtgradient = LinearGradient(
     colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
@@ -57,15 +61,15 @@ class _SignInState extends State<SignIn> {
                           ? MediaQuery.of(context).size.height
                           : null,
                       width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        // image: DecorationImage(
-                        //   image: AssetImage(
-                        //     "assets/blue_backg.jpg",
-                        //   ),
-                        //   fit: BoxFit.cover,
-                        // ),
-                      ),
+                      decoration: BoxDecoration(color: Colors.grey[50]
+                          //gradient: myGradient1
+                          // image: DecorationImage(
+                          //   image: AssetImage(
+                          //     "assets/blue_backg.jpg",
+                          //   ),
+                          //   fit: BoxFit.cover,
+                          // ),
+                          ),
                       child: Center(
                         child: Column(
                           children: [
@@ -438,7 +442,14 @@ class _SignInState extends State<SignIn> {
                                   ),
                                 ),
                               ],
-                            )
+                            ),
+                            Expanded(
+                              child: ClipPath(
+                                  clipper: WaveClipperTwo(reverse: true),
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          gradient: myGradient1))),
+                            ),
                           ],
                         ),
                       ),

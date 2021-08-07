@@ -369,7 +369,7 @@ class _ProductState extends State<ProductInfo> {
                                                     child: BouncingWidget(
                                                       scaleFactor: 3,
                                                       duration: Duration(
-                                                          milliseconds: 270),
+                                                          milliseconds: 240),
                                                       onPressed: () async {
                                                         if (toggleFav ==
                                                             false) {
