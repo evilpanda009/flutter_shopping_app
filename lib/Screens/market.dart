@@ -121,12 +121,12 @@ class _MarketState extends State<Market>
 
   void handleClick(String value) {
     switch (value) {
-      case 'Price Low to High':
+      case 'Price Ascending':
         setState(() {
           stream = productStream1;
         });
         break;
-      case 'Price High to Low':
+      case 'Price Descending':
         setState(() {
           stream = productStream2;
         });
@@ -353,8 +353,8 @@ class _MarketState extends State<Market>
                           onSelected: handleClick,
                           itemBuilder: (BuildContext context) {
                             return {
-                              'Price Low to High',
-                              'Price High to Low',
+                              'Price Ascending',
+                              'Price Descending',
                               'Alphabetical'
                             }.map((String choice) {
                               return PopupMenuItem<String>(
