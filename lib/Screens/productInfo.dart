@@ -164,12 +164,15 @@ class _ProductState extends State<ProductInfo> {
                                 bottom: 20.0, left: 20, right: 20),
                             child: Hero(
                               tag: "product" + index.toString(),
-                              child: Image.network(productData['image'],
-                                  errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/no-internet.gif',
-                                );
-                              }),
+                              child: FadeInImage.assetNetwork(
+                                  image: productData['image'],
+                                  placeholder: 'assets/loading2.gif',
+                                  imageErrorBuilder:
+                                      (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/no-internet.gif',
+                                    );
+                                  }),
                             ),
                           ),
                         ),

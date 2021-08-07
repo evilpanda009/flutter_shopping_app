@@ -144,12 +144,12 @@ class _SellState extends State<Sell> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: FadeInImage.assetNetwork(
-                                            placeholder: 'assets/tag.jpg',
+                                            placeholder: 'assets/loading2.gif',
                                             image: data[index]['image'],
                                             imageErrorBuilder:
                                                 (context, error, stackTrace) {
                                               return Image.asset(
-                                                'assets/no_connection.gif',
+                                                'assets/no-internet.gif',
                                                 fit: BoxFit.contain,
                                               );
                                             }),

@@ -92,7 +92,6 @@ flutter:
     - assets/splash2.gif
     - assets/Login Colored.json
     - assets/featured-products.jpg
-    - assets/shopping-cart.svg
     - assets/logo_final.png
 
 flutter_icons:

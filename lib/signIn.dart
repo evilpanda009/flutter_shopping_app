@@ -224,7 +224,7 @@ class _SignInState extends State<SignIn> {
                                       child: Align(
                                         alignment: Alignment.centerRight,
                                         child: Text(
-                                          "Forgot Password",
+                                          "",
                                           style:
                                               TextStyle(color: Colors.orange),
                                         ),
