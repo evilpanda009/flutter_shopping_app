@@ -2,7 +2,7 @@
 Shopr is a one stop shopping app for all your online shopping needs from clothing to electronics, accessories and more.  
   
 ## The App  
-The user can sign in with email, password or with Google. The main shop has many pre available products and the user can add them to their cart and favorites. The users can also sell and manage their own products. There is also a search and sort products feature.
+The user can sign in with email and password or with Google. The main shop has many pre available products and the user can add them to their cart and favorites. The users can also sell and manage their own products. There is also a search and sort products feature. After buying the the past history is also saved.
   
 ## Video    
 
@@ -10,8 +10,10 @@ The user can sign in with email, password or with Google. The main shop has many
 https://user-images.githubusercontent.com/70006069/128609887-7cf4c492-5422-4e2c-82b3-cc052df06202.mp4
 
 
-### APK Link  
-https://drive.google.com/file/d/1zDwcPGzqXZZfDmUOvn1I44ZschQgn4AE/view?usp=sharing  
+### APK Link    
+- Appetize.io link: https://appetize.io/app/etefn5tj3utua08mk64anateg4  
+  
+- Download from [here](https://drive.google.com/file/d/1zDwcPGzqXZZfDmUOvn1I44ZschQgn4AE/view?usp=sharing)  
 
 ### Note  
 Selling a product may take a bit of time in case of slow or unstable internet connections, also the search bar is case sensitive.  
