@@ -10,6 +10,8 @@ The user can sign in with email, password or with Google. The main shop has many
 https://user-images.githubusercontent.com/70006069/128609887-7cf4c492-5422-4e2c-82b3-cc052df06202.mp4
 
 
+### APK Link  
+https://drive.google.com/file/d/1zDwcPGzqXZZfDmUOvn1I44ZschQgn4AE/view?usp=sharing  
 
 ### Note  
 Selling a product may take a bit of time in case of slow or unstable internet connections, also the search bar is case sensitive.  
