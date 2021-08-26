@@ -11,8 +11,7 @@ https://user-images.githubusercontent.com/70006069/128609887-7cf4c492-5422-4e2c-
 
 
 ### APK Link    
-- Appetize.io link: https://appetize.io/app/etefn5tj3utua08mk64anateg4  
-  
+
 - Download from [here](https://drive.google.com/file/d/1zDwcPGzqXZZfDmUOvn1I44ZschQgn4AE/view?usp=sharing)  
 
 ### Note  
